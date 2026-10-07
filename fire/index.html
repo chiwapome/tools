@@ -38,6 +38,7 @@
   --coral:#F07D63; --field:#1D2E31; --hero-bg:#24403F; --hero-ink:#F1F6F4; --hero-line:rgba(241,246,244,.2); color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7}
 .wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
@@ -111,6 +112,10 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
 
 .notes{font-size:12.5px;color:var(--muted);display:grid;gap:10px}
 .notes h2{font-size:15px;color:var(--ink)}
+.article-cta{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.article-cta p{margin:0;font-weight:700}
+.article-btn{display:inline-block;background:var(--teal);color:var(--surface);font:700 15px var(--body);text-decoration:none;padding:10px 18px;border-radius:999px}
+.article-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .line-cta{display:grid;gap:12px;justify-items:start;padding:18px;border-radius:14px;background:var(--gold-soft);border:1px solid var(--gold)}
 .line-lead{margin:0;font:700 16px/1.6 var(--display);color:var(--ink)}
 .line-btn{display:inline-block;background:#06C755;color:#fff;font:700 16px var(--body);text-decoration:none;padding:12px 22px;border-radius:999px}
@@ -130,7 +135,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
   <header>
     <div class="eyebrow">FIRE CALCULATOR ／ チワポメ</div>
     <h1>何歳で、仕事を辞められるか</h1>
-    <p class="lead">今の年齢、今の資産、毎月の積立。この3つを入れるだけで、年金も退職金も当てにせずに辞められる年齢が出ます。生活費・学費・住宅ローンには、公的な調べの平均値が最初から入っています。</p>
+    <p class="lead">今の年齢、今の資産、毎月の積立の3つを入れると、年金も退職金も当てにせずに辞められる年齢が出ます。生活費などは公的な平均値で入っています。</p>
     <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg>入れた数字そのものは送りません。年齢帯など、個人が分からない形に丸めた集計だけを記録します。</div>
   </header>
 
@@ -161,12 +166,17 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
   <section class="result" aria-live="polite">
     <div class="label">あなたが辞められる年齢</div>
     <div class="big" id="bigAge"><b>78</b><small>歳</small></div>
-    <p class="sub">今の積立のまま続けたら、何歳で辞められるか。年金も退職金も当てにしない答えです。<span id="exampleNote">例として、40代夫婦の平均の貯蓄（1,381万円）が入っています。</span></p>
-    <p class="sub" id="fourNote"></p>
+    <p class="sub">今の積立のまま・年金と退職金なし<span id="exampleNote">（例: 40代夫婦の平均の貯蓄1,381万円）</span></p>
     <div class="chips">
       <div class="chip"><div class="k" id="kTarget">60歳で辞めるのに要る毎月の積立</div><div class="v" id="vTarget">—</div></div>
       <div class="chip"><div class="k">年金と退職金を入れると</div><div class="v" id="vPension">—</div></div>
+      <div class="chip" id="chipFour" hidden><div class="k" id="kFour">4%ルールの目標</div><div class="v" id="vFour">—</div></div>
     </div>
+  </section>
+
+  <section class="article-cta" id="articleCta" hidden>
+    <p>数字の読み方と、出た年齢を縮める手は記事で</p>
+    <a class="article-btn" id="articleBtn" href="〔記事のURL〕" data-dest="note_fire">記事を読む</a>
   </section>
 
   <section class="panel chart">
@@ -187,7 +197,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <div class="canvas donut"><canvas id="c3" aria-label="辞めたあとの支出の内訳のグラフ" role="img"></canvas></div>
     <div class="pair">
       <div><div class="k">辞めてから出ていくお金の合計</div><div class="v" id="vTotal">—</div></div>
-      <div><div class="k">辞める時点で要る額（運用しながら取り崩した場合）</div><div class="v" id="vNeedAt">—</div></div>
+      <div><div class="k">辞める時点で要る額</div><div class="v" id="vNeedAt">—</div></div>
     </div>
     <div class="hints" id="hints3"></div>
   </section>
@@ -267,7 +277,6 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <ul class="links">
       <li><a href="https://note.com/chiwapome_kolin/n/n3207ad5f311a" data-dest="note_72">収入の4分の1を積むだけ。5年で資産5.5倍の会社員</a><span>毎月の積立を増やす仕組み（note の有料記事）</span></li>
       <li><a href="https://note.com/chiwapome_kolin/membership" data-dest="membership">メンバーシップ（月980円）</a><span>これまでの有料記事9本と、毎週の運用の記録</span></li>
-      <li><a href="https://note.com/chiwapome_kolin" data-dest="note_profile">この道具の作り方と使い方を書いた note</a><span>チワポメの note</span></li>
     </ul>
   </section>
 
@@ -542,8 +551,8 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
             borderColor: css("--gold"), backgroundColor: css("--gold"), borderWidth: 3, pointRadius: 0, tension: 0.25 },
           { label: "辞めるのに要る資産", data: base.rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
             borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 },
-          { label: "その年に辞めるなら要る資産（4%ルール）", borderColor: css("--muted"), backgroundColor: css("--muted"),
-            data: base.rows.map(function (w) { return base.four === null || w.x <= base.four.x ? Math.round(w.F / MAN) : null; }),
+          { label: "4%ルールの目標", borderColor: css("--muted"), backgroundColor: css("--muted"),
+            data: base.rows.map(function (w) { return base.four !== null && w.x <= base.four.x ? Math.round(base.four.need / MAN) : null; }),
             pointRadius: base.rows.map(function (w) { return base.four !== null && w.x === base.four.x ? 5 : 0; }),
             pointBorderColor: css("--surface"), pointBorderWidth: 2,
             tag: base.four === null ? null : { x: base.four.x, text: "4%ルールの目標 " + man(base.four.need) },
@@ -563,21 +572,9 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       }
       ,plugins: [pointTag]
     });
-    var lead = "緑の線が赤い点線に届いた年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) + "</strong>";
-    if (base.earliest0 !== null && p3.earliest0 === base.earliest0 && p5.earliest0 === base.earliest0) {
-      lead += "。3万円・5万円足しても<strong>" + ageText(base.earliest0) + "</strong>のまま（もう早めるより、辞めたあとの線を見る段階）。";
-    } else {
-      lead += "、3万円足すと<strong>" + ageText(p3.earliest0) + "</strong>、5万円足すと<strong>" + ageText(p5.earliest0) + "</strong>。";
-    }
-    if (base.earliest0 !== null) {
-      lead += "金色の線は、" + base.earliest0 + "歳で積立を止めて、毎年の支出を取り崩しながら残りを運用した場合だ。" + a.until + "歳まで0を割らない。";
-    }
-    $("say1").innerHTML = lead;
-    $("fourNote").innerHTML = !show4
-      ? "残りが30年より短いので、4%ルールの目安は使いません（30年の取り崩しを調べた研究のため）。"
-      : base.four === null
-      ? "比べる目安の4%ルール（トリニティ・スタディ）では、" + a.until + "歳までに届かない。"
-      : "比べる目安: 4%ルール（トリニティ・スタディ）なら、要る資産は辞めた最初の年の支出×25＝<strong>" + man(base.four.need) + "</strong>で、届くのは<strong>" + base.four.x + "歳</strong>。米国の1926〜1995年のデータで最長30年の取り崩しを調べた研究で、日本で同じとは限らない。";
+    $("say1").innerHTML = "今の積立 <strong>" + ageText(base.earliest0) + "</strong>／+3万円 <strong>" + ageText(p3.earliest0) + "</strong>／+5万円 <strong>" + ageText(p5.earliest0) + "</strong>";
+    $("chipFour").hidden = !(show4 && base.four !== null);
+    if (show4 && base.four !== null) { $("kFour").textContent = "4%ルールの目標 " + man(base.four.need); $("vFour").textContent = base.four.x + "歳で届く"; }
 
     // ② 積立額ごとの辞められる年齢
     var steps = [0, 1, 3, 5, 10, 15];
@@ -600,7 +597,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       plugins: [barLabels]
     });
     var best = res[res.length - 1].earliest0;
-    $("say2").innerHTML = "金色が今の積立。毎月15万円足すと<strong>" + ageText(best) + "</strong>まで縮む。";
+    $("say2").textContent = "金色が今の積立";
 
     // ③ 辞めたあとの支出の内訳
     var from = base.earliest0 === null ? a.target : base.earliest0;
@@ -626,15 +623,14 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     });
     var hints = [];
     hints.push(a.tax === 0
-      ? '<p class="hint">国保と住民税は入っていません。住んでいる市区町村の試算を<button class="link" type="button" data-open="tax">詳しく入れる</button>に入れると足されます。</p>'
-      : '<p class="hint">税・社会保険料（国保・住民税など）は、家計調査の平均で入っています。市区町村の試算があれば<button class="link" type="button" data-open="tax">詳しく入れる</button>で入れ直せます。</p>');
-    if (sum.edu === 0 && sum.loan === 0) hints.push('<p class="hint">子どもや住宅ローンを入れると、内訳が分かれます →<button class="link" type="button" data-open="kid0">詳しく入れる</button></p>');
+      ? '<p class="hint">国保・住民税は入っていません（<button class="link" type="button" data-open="tax">詳しく入れる</button>で入力）</p>'
+      : '<p class="hint">税・社会保険料は平均で入っています（<button class="link" type="button" data-open="tax">詳しく入れる</button>で変更）</p>');
+    if (sum.edu === 0 && sum.loan === 0) hints.push('<p class="hint">子ども・住宅ローンは<button class="link" type="button" data-open="kid0">詳しく入れる</button>で</p>');
     $("hints3").innerHTML = hints.join("");
     var needAt = base.rows.filter(function (w) { return w.x === from; })[0].O;
     $("vTotal").textContent = man(total);
     $("vNeedAt").textContent = man(needAt);
-    $("say3").innerHTML = from + "歳で辞めてから" + a.until + "歳までに出ていくお金は、将来の値段で<strong>" + man(total) + "</strong>。いちばん大きいのは" +
-      (parts.length ? parts.slice().sort(function (x, y) { return y[1] - x[1]; })[0][0] : "なし") + "。辞めたあとも残りのお金は運用で増えるので、辞める時点に要るのは合計より少ない<strong>" + man(needAt) + "</strong>で足りる。";
+    $("say3").textContent = from + "歳で辞めてから" + a.until + "歳まで（将来の値段）";
   }
 
   // 入力と連動
@@ -642,6 +638,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     $(n).addEventListener("input", function () { $(r).value = $(n).value; schedule(); });
     $(r).addEventListener("input", function () { $(n).value = $(r).value; schedule(); });
   }
+  if (/^https?:\/\//.test($("articleBtn").getAttribute("href"))) $("articleCta").hidden = false;
   pair("age", "age_r"); pair("assets", "assets_r"); pair("saving", "saving_r");
   var timer = null;
   function schedule() { $("exampleNote").hidden = true; clearTimeout(timer); timer = setTimeout(render, 60); }
