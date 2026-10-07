@@ -171,7 +171,6 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
       <div class="chip"><div class="k" id="kTarget">60歳で辞めるのに要る毎月の積立</div><div class="v" id="vTarget">—</div></div>
       <div class="chip"><div class="k">年金と退職金を入れると</div><div class="v" id="vPension">—</div></div>
       <div class="chip" id="chipTake" hidden><div class="k" id="kTake">今の積立は</div><div class="v" id="vTake">—</div></div>
-      <div class="chip" id="chipFour" hidden><div class="k" id="kFour">4%ルールの目標</div><div class="v" id="vFour">—</div></div>
     </div>
   </section>
 
@@ -364,12 +363,16 @@ function plan(a, extra) {
   var L = loanTerms(a);
   var pay = (L.amt > 0 && L.years > 0) ? (L.rate === 0 ? L.amt / (L.years * 12) : L.amt * (L.rate / 12) / (1 - Math.pow(1 + L.rate / 12, -L.years * 12))) : 0;
   // 不動産（2件まで）: 毎年の手残り。売る年齢があれば、その年から家賃は止まり、売った額が入る
-  var props = (a.re || []).filter(function (q) { return q.rent > 0 || q.loan > 0; });
+  var props = (a.re || []).filter(function (q) { return q.rent > 0 || q.loan > 0 || q.bal > 0; }).map(function (q) {
+    var pay = q.loan, m = (q.loanEnd - a.age) * 12;
+    if (q.bal > 0) pay = m <= 0 ? 0 : (q.brate === 0 ? q.bal / m : q.bal * (q.brate / 12) / (1 - Math.pow(1 + q.brate / 12, -m)));
+    return Object.assign({}, q, { pay: pay });
+  });
   function reNet(x) {
     var t = 0;
     props.forEach(function (q) {
       if (q.saleAge && x >= q.saleAge) { if (x === q.saleAge) t += q.sale; return; }
-      t += q.rent * 12 * (1 - q.vac) - q.exp * 12 - (x < q.loanEnd ? q.loan * 12 : 0) - q.ptax;
+      t += q.rent * 12 * (1 - q.vac) - q.exp * 12 - (x < q.loanEnd ? q.pay * 12 : 0) - q.ptax;
     });
     return t;
   }
@@ -452,7 +455,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
 
   // 不動産の欄（2件）
   var RE_FIELDS = [["rent", "家賃収入（月・満室・万円）", "", ""], ["vac", "空室率（%）", "18.6", "全国の平均（住宅・土地統計調査）"],
-    ["exp", "経費（月・万円）", "", "管理費・修繕・保険など"], ["loan", "ローン返済（月・万円）", "", ""],
+    ["exp", "経費（月・万円）", "", "管理費・修繕・保険など"], ["bal", "ローン残高（万円）", "", ""], ["brate", "ローン金利（年・%）", "", "残高と金利で毎月の返済を出す"], ["loan", "またはローン返済（月・万円）", "", "残高を入れたら空欄でよい"],
     ["end", "返済が終わる年齢", "", ""], ["ptax", "固定資産税（年・万円）", "", ""],
     ["sage", "売る年齢（任意）", "", ""], ["sale", "売って手元に残る額（万円・任意）", "", ""]];
   for (var q = 0; q < 2; q++) {
@@ -492,7 +495,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       takehome: val("takehome", 0) * MAN,
       re: [0, 1].map(function (k) {
         var g = function (f, d) { return val("re" + k + "_" + f, d); };
-        return { rent: g("rent", 0) * MAN, vac: g("vac", 18.6) / 100, exp: g("exp", 0) * MAN, loan: g("loan", 0) * MAN,
+        return { rent: g("rent", 0) * MAN, vac: g("vac", 18.6) / 100, exp: g("exp", 0) * MAN, loan: g("loan", 0) * MAN, bal: g("bal", 0) * MAN, brate: g("brate", 0) / 100,
                  loanEnd: g("end", 0), ptax: g("ptax", 0) * MAN, saleAge: g("sage", 0), sale: g("sale", 0) * MAN };
       })
     };
@@ -589,8 +592,6 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
         pointHoverRadius: 6, pointBorderColor: css("--surface"), pointBorderWidth: 2, spanGaps: false
       };
     }
-    // 4%ルールは30年の取り崩しを調べた研究なので、辞めてから最後の年まで30年以上あるときだけ出す
-    var show4 = base.earliest0 !== null && a.until - base.earliest0 >= 30;
     var drawMap = {}; base.draw.forEach(function (d) { drawMap[d.x] = Math.round(d.A / MAN); });
     chart("c1", {
       type: "line",
@@ -603,14 +604,8 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
           { label: "辞めたあと（取り崩しながら運用）", data: ages.map(function (x) { return x in drawMap ? drawMap[x] : null; }),
             borderColor: css("--gold"), backgroundColor: css("--gold"), borderWidth: 3, pointRadius: 0, tension: 0.25 },
           { label: "辞めるのに要る資産", data: base.rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
-            borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 },
-          { label: "4%ルールの目標", borderColor: css("--muted"), backgroundColor: css("--muted"),
-            data: base.rows.map(function (w) { return base.four !== null && w.x <= base.four.x ? Math.round(base.four.need / MAN) : null; }),
-            pointRadius: base.rows.map(function (w) { return base.four !== null && w.x === base.four.x ? 5 : 0; }),
-            pointBorderColor: css("--surface"), pointBorderWidth: 2,
-            tag: base.four === null ? null : { x: base.four.x, text: "4%ルールの目標 " + man(base.four.need) },
-            borderDash: [2, 4], borderWidth: 2, tension: 0.25 }
-        ].filter(function (d) { return show4 || d.label.indexOf("4%ルール") < 0; })
+            borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 }
+        ]
       },
       options: {
         responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
@@ -623,13 +618,10 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
           y: { min: 0, grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v >= 10000 ? (v / 10000).toLocaleString("ja-JP") + "億" : v.toLocaleString("ja-JP") + "万"; } } }
         }
       }
-      ,plugins: [pointTag]
     });
     var nowAll = base.earliest0 === a.age && p3.earliest0 === a.age && p5.earliest0 === a.age;
     $("say1").innerHTML = nowAll ? "<strong>今すぐ</strong>（積立を増やしても同じ）"
       : "今の積立 <strong>" + ageText(base.earliest0) + "</strong>／+3万円 <strong>" + ageText(p3.earliest0) + "</strong>／+5万円 <strong>" + ageText(p5.earliest0) + "</strong>";
-    $("chipFour").hidden = !(show4 && base.four !== null);
-    if (show4 && base.four !== null) { $("kFour").textContent = "4%ルールの目標 " + man(base.four.need); $("vFour").textContent = base.four.x + "歳で届く"; }
 
     // ② 積立額ごとの辞められる年齢
     var steps = [0, 1, 3, 5, 10, 15];
