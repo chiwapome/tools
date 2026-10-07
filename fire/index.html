@@ -166,10 +166,11 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
   <section class="result" aria-live="polite">
     <div class="label">あなたが辞められる年齢</div>
     <div class="big" id="bigAge"><b>78</b><small>歳</small></div>
-    <p class="sub">今の積立のまま・年金と退職金なし<span id="exampleNote">（例: 40代夫婦の平均の貯蓄1,381万円）</span></p>
+    <p class="sub"><span id="subMain">今の積立のまま・年金と退職金なし</span><span id="exampleNote">（例: 40代夫婦の平均の貯蓄1,381万円）</span></p>
     <div class="chips">
       <div class="chip"><div class="k" id="kTarget">60歳で辞めるのに要る毎月の積立</div><div class="v" id="vTarget">—</div></div>
       <div class="chip"><div class="k">年金と退職金を入れると</div><div class="v" id="vPension">—</div></div>
+      <div class="chip" id="chipTake" hidden><div class="k" id="kTake">今の積立は</div><div class="v" id="vTake">—</div></div>
       <div class="chip" id="chipFour" hidden><div class="k" id="kFour">4%ルールの目標</div><div class="v" id="vFour">—</div></div>
     </div>
   </section>
@@ -245,6 +246,16 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
         </div>
       </fieldset>
       <fieldset>
+        <legend>不動産（2件まで）</legend>
+        <div id="reBox" style="display:grid;gap:10px"></div>
+      </fieldset>
+      <fieldset>
+        <legend>月の手取り</legend>
+        <div class="grid2">
+          <div class="f"><label for="takehome">今の月の手取り（万円）</label><input id="takehome" type="number" step="0.5" placeholder="入れると積立の割合が出る"></div>
+        </div>
+      </fieldset>
+      <fieldset>
         <legend>住宅ローン</legend>
         <div class="grid2">
           <div class="f"><label for="loantype">住宅ローン</label><select id="loantype"><option value="なし" selected>なし</option><option value="固定">固定</option><option value="変動">変動</option></select><span class="src">選ぶと平均の値が入る</span></div>
@@ -287,6 +298,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
       <li>辞めるまでの生活費・学費・ローンは給料から払い、積立は今の額のまま辞める年まで続くと置きます。</li>
       <li>生活費・学費・国保と住民税・国民年金保険料は今の値段で入れ、毎年、物価の上昇率で増やします。住宅ローンの返済と資産のほかのお金は増えないと置きます。利回りは物価を引く前の名目です。</li>
       <li>辞めたあとの税・社会保険料は、家計調査の夫婦とも65歳以上の無職世帯の「非消費支出」（直接税と社会保険料、月32,850円）を、辞めた年から毎年かかると置きます。65歳以上の世帯の値なので、60歳までの国民年金保険料（別に足しています）とは重なりません。</li>
+      <li>不動産は、家賃×（1−空室率）−経費−ローン返済−固定資産税÷12 を毎月の手残りとして、資産のほかのお金に足します。返済が終わった年から返済分が無くなり、売る年齢を入れるとその年から家賃が止まって売った額が入ります。物価が上がっても増えないと置きます。</li>
       <li>「辞めたあとに出ていくお金」は、辞められる年齢（届かなければ辞めたい年齢）から最後の年までの合計で、将来の値段のままです。</li>
     </ul>
     <h2>出典</h2>
@@ -301,6 +313,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
       <li>文部科学省「私立大学等の令和7年度入学者に係る学生納付金等調査結果」 <a href="https://www.mext.go.jp/a_menu/koutou/shinkou/07021403/1412031_00006.htm">https://www.mext.go.jp/a_menu/koutou/shinkou/07021403/1412031_00006.htm</a></li>
       <li>文部科学省「国立大学と私立大学の授業料等の推移」 <a href="https://www.mext.go.jp/b_menu/shingi/kokuritu/005/gijiroku/attach/1386502.htm">https://www.mext.go.jp/b_menu/shingi/kokuritu/005/gijiroku/attach/1386502.htm</a></li>
       <li>文部科学省「高等学校等就学支援金制度に関するQ＆A」 <a href="https://www.mext.go.jp/a_menu/shotou/mushouka/1342600.htm">https://www.mext.go.jp/a_menu/shotou/mushouka/1342600.htm</a></li>
+      <li>総務省統計局「令和5年住宅・土地統計調査 住宅及び世帯に関する基本集計 結果の概要」（空室率18.6%＝賃貸用の空き家443.6万戸÷（借家1,946.2万戸＋賃貸用の空き家）） <a href="https://www.stat.go.jp/data/jyutaku/2023/pdf/kihon_gaiyou.pdf">https://www.stat.go.jp/data/jyutaku/2023/pdf/kihon_gaiyou.pdf</a></li>
       <li>College Board「Trends in College Pricing and Student Aid 2025」 <a href="https://research.collegeboard.org/media/pdf/Trends-in-College-Pricing-and-Student-Aid-2025-final_1.pdf">https://research.collegeboard.org/media/pdf/Trends-in-College-Pricing-and-Student-Aid-2025-final_1.pdf</a></li>
       <li>住宅金融支援機構「2025年度フラット35利用者調査」 <a href="https://www.jhf.go.jp/files/topics/4941_ext_99_1.pdf">https://www.jhf.go.jp/files/topics/4941_ext_99_1.pdf</a></li>
       <li>住宅金融支援機構「【フラット35】金利情報」 <a href="https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top">https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top</a></li>
@@ -350,6 +363,21 @@ function plan(a, extra) {
   var spouse = a.spouse == null ? a.age : a.spouse;
   var L = loanTerms(a);
   var pay = (L.amt > 0 && L.years > 0) ? (L.rate === 0 ? L.amt / (L.years * 12) : L.amt * (L.rate / 12) / (1 - Math.pow(1 + L.rate / 12, -L.years * 12))) : 0;
+  // 不動産（2件まで）: 毎年の手残り。売る年齢があれば、その年から家賃は止まり、売った額が入る
+  var props = (a.re || []).filter(function (q) { return q.rent > 0 || q.loan > 0; });
+  function reNet(x) {
+    var t = 0;
+    props.forEach(function (q) {
+      if (q.saleAge && x >= q.saleAge) { if (x === q.saleAge) t += q.sale; return; }
+      t += q.rent * 12 * (1 - q.vac) - q.exp * 12 - (x < q.loanEnd ? q.loan * 12 : 0) - q.ptax;
+    });
+    return t;
+  }
+  function saleGrown(x) { // 辞める前に売ったお金は、資産に足して運用する
+    var t = 0;
+    props.forEach(function (q) { if (q.saleAge && q.saleAge > a.age && x > q.saleAge) t += q.sale * Math.pow(rr, x - q.saleAge); });
+    return t;
+  }
   var rows = [];
   for (var x = a.age; x <= a.until; x++) {
     var n = x - a.age, p = Math.pow(1 + a.infl, n), sp = spouse > 0 ? spouse + n : null;
@@ -360,12 +388,12 @@ function plan(a, extra) {
     var loan = (L.amt > 0 && L.years > 0 && x < a.age + L.years) ? pay * 12 : 0;
     var payers = (x < 60 ? 1 : 0) + ((sp !== null && a.spays === 1 && sp < 60) ? 1 : 0);
     var taxins = (a.tax + a.npi * 12 * payers) * p;
-    var other = ((a.ochg === 0 || x < a.ochg) ? a.other : a.oafter) * 12;
+    var other = ((a.ochg === 0 || x < a.ochg) ? a.other : a.oafter) * 12 + reNet(x);
     var pen = (x >= a.penfrom ? a.pen * 12 * Math.pow(1 + a.pgrow, n) : 0)
             + ((sp !== null && sp >= a.spenfrom) ? a.spen * 12 * Math.pow(1 + a.pgrow, n) : 0);
     var H = live + edu + loan + taxins - other - pen;
     var ann = r === 0 ? saving * 12 * n : saving * (Math.pow(1 + r / 12, 12 * n) - 1) / (r / 12);
-    var J = a.assets * Math.pow(rr, n) + ann + a.sev;
+    var J = a.assets * Math.pow(rr, n) + ann + a.sev + saleGrown(x);
     var lockedNow = a.locked * Math.pow(rr, n);
     rows.push({ x: x, live: live, edu: edu, loan: loan, taxins: taxins, H: H, N: H + pen, J: J, P: J - a.sev, L: J - lockedNow, R: J - a.sev - lockedNow });
   }
@@ -422,6 +450,20 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     kidsBox.insertAdjacentHTML("beforeend", html + "</div></div>");
   }
 
+  // 不動産の欄（2件）
+  var RE_FIELDS = [["rent", "家賃収入（月・満室・万円）", "", ""], ["vac", "空室率（%）", "18.6", "全国の平均（住宅・土地統計調査）"],
+    ["exp", "経費（月・万円）", "", "管理費・修繕・保険など"], ["loan", "ローン返済（月・万円）", "", ""],
+    ["end", "返済が終わる年齢", "", ""], ["ptax", "固定資産税（年・万円）", "", ""],
+    ["sage", "売る年齢（任意）", "", ""], ["sale", "売って手元に残る額（万円・任意）", "", ""]];
+  for (var q = 0; q < 2; q++) {
+    var h = '<div class="kid"><div style="font-weight:700;font-size:13px">物件' + (q + 1) + '</div><div class="grid2">';
+    RE_FIELDS.forEach(function (f) {
+      h += '<div class="f"><label for="re' + q + '_' + f[0] + '">' + f[1] + '</label><input id="re' + q + '_' + f[0] + '" type="number" step="any"' +
+        (f[2] ? ' value="' + f[2] + '"' : '') + '>' + (f[3] ? '<span class="src">' + f[3] + '</span>' : '') + '</div>';
+    });
+    $("reBox").insertAdjacentHTML("beforeend", h + "</div></div>");
+  }
+
   var defaults = {};
   Array.prototype.forEach.call(document.querySelectorAll("input,select"), function (el) { if (el.id) defaults[el.id] = el.value; });
 
@@ -446,7 +488,13 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       loanamt: num("loanamt") === null ? null : num("loanamt") * MAN,
       loanrate: num("loanrate") === null ? null : num("loanrate") / 100,
       loanyears: num("loanyears"),
-      kids: kids, usd: val("usd", 60920), fx: val("fx", 150), hs: val("hs", 0), aid: val("aid", 0)
+      kids: kids, usd: val("usd", 60920), fx: val("fx", 150), hs: val("hs", 0), aid: val("aid", 0),
+      takehome: val("takehome", 0) * MAN,
+      re: [0, 1].map(function (k) {
+        var g = function (f, d) { return val("re" + k + "_" + f, d); };
+        return { rent: g("rent", 0) * MAN, vac: g("vac", 18.6) / 100, exp: g("exp", 0) * MAN, loan: g("loan", 0) * MAN,
+                 loanEnd: g("end", 0), ptax: g("ptax", 0) * MAN, saleAge: g("sage", 0), sale: g("sale", 0) * MAN };
+      })
     };
   }
 
@@ -507,6 +555,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     var base = plan(a), p3 = plan(a, 3 * MAN), p5 = plan(a, 5 * MAN);
 
     // 大きな答え
+    $("subMain").textContent = base.earliest0 === a.age ? "今すぐ辞められる・年金と退職金なし" : "今の積立のまま・年金と退職金なし";
     $("bigAge").innerHTML = base.earliest0 === null
       ? '<span class="none">' + a.until + '歳までに届かない</span>'
       : "<b>" + base.earliest0 + "</b><small>歳</small>";
@@ -521,6 +570,10 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
                    : '<small>今より' + man1(gap) + '増やす</small>'));
     }
     $("vPension").textContent = ageText(base.earliest);
+    $("chipTake").hidden = !(a.takehome > 0);
+    if (a.takehome > 0) {
+      $("vTake").innerHTML = "手取りの" + Math.round(a.saving / a.takehome * 100) + "%<small>4分の1なら毎月" + man1(a.takehome / 4) + "</small>";
+    }
 
     Chart.defaults.font.family = css("--body");
     Chart.defaults.color = css("--muted");
@@ -572,7 +625,9 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       }
       ,plugins: [pointTag]
     });
-    $("say1").innerHTML = "今の積立 <strong>" + ageText(base.earliest0) + "</strong>／+3万円 <strong>" + ageText(p3.earliest0) + "</strong>／+5万円 <strong>" + ageText(p5.earliest0) + "</strong>";
+    var nowAll = base.earliest0 === a.age && p3.earliest0 === a.age && p5.earliest0 === a.age;
+    $("say1").innerHTML = nowAll ? "<strong>今すぐ</strong>（積立を増やしても同じ）"
+      : "今の積立 <strong>" + ageText(base.earliest0) + "</strong>／+3万円 <strong>" + ageText(p3.earliest0) + "</strong>／+5万円 <strong>" + ageText(p5.earliest0) + "</strong>";
     $("chipFour").hidden = !(show4 && base.four !== null);
     if (show4 && base.four !== null) { $("kFour").textContent = "4%ルールの目標 " + man(base.four.need); $("vFour").textContent = base.four.x + "歳で届く"; }
 
@@ -671,7 +726,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     if (man < 3000) return "2000-3000"; if (man < 5000) return "3000-5000"; if (man < 10000) return "5000-10000"; return "10000~";
   }
   function saveBand(man) { if (man < 3) return "~3"; if (man < 5) return "3-5"; if (man < 10) return "5-10"; if (man < 20) return "10-20"; return "20~"; }
-  var touched = {}, anyTouch = false, detailUsed = false, sentCombos = {}, viewTimer = null, detailsSent = false;
+  var touched = {}, anyTouch = false, detailUsed = false, reUsed = false, sentCombos = {}, viewTimer = null, detailsSent = false;
   function onTouch(field) {
     anyTouch = true;
     if (!touched[field]) { touched[field] = true; track("input_touch", { field: field }); }
@@ -683,8 +738,8 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     var a = read(); if (!(a.until > a.age)) return;
     var p = plan(a);
     var params = { age_band: band5(a.age), asset_band: assetBand(a.assets / MAN), save_band: saveBand(a.saving / MAN),
-                   fire_age_band: band5(p.earliest0), detail_used: detailUsed };
-    var key = [params.age_band, params.asset_band, params.save_band, params.fire_age_band, params.detail_used].join("|");
+                   fire_age_band: band5(p.earliest0), detail_used: detailUsed, realestate_used: reUsed };
+    var key = [params.age_band, params.asset_band, params.save_band, params.fire_age_band, params.detail_used, params.realestate_used].join("|");
     if (sentCombos[key]) return;
     sentCombos[key] = true;
     track("result_view", params);
@@ -692,7 +747,7 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
   Array.prototype.forEach.call(document.querySelectorAll("main input, main select"), function (el) {
     var field = el.id.replace(/_r$/, "");
     var inDetails = $("more").contains(el);
-    var h = function () { if (inDetails) detailUsed = true; onTouch(field); };
+    var h = function () { if (inDetails) detailUsed = true; if (/^re\d_/.test(field)) reUsed = true; onTouch(field); };
     el.addEventListener("input", h); el.addEventListener("change", h);
   });
   $("more").addEventListener("toggle", function () { if ($("more").open && !detailsSent) { detailsSent = true; track("details_open"); } });
