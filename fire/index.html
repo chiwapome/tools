@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>何歳で辞められるか</title>
-<meta name="description" content="今の年齢・資産・毎月の積立の3つを入れると、年金も退職金も当てにせずに仕事を辞められる年齢が出ます。入れた数字はこのページの中だけで計算し、どこにも送りません。">
+<meta name="description" content="今の年齢・資産・毎月の積立の3つを入れると、年金も退職金も当てにせずに仕事を辞められる年齢が出ます。入れた数字そのものは送りません。年齢帯など、個人が分からない形に丸めた集計だけを記録します。">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L1Q242S8FR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L1Q242S8FR', { allow_google_signals: false, allow_ad_personalization_signals: false });
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
@@ -99,6 +106,10 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
 
 .notes{font-size:12.5px;color:var(--muted);display:grid;gap:10px}
 .notes h2{font-size:15px;color:var(--ink)}
+.next .links{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:12px}
+.next .links li{display:grid;gap:2px}
+.next .links a{font:700 15px var(--body);color:var(--teal);text-underline-offset:3px}
+.next .links span{font-size:12.5px;color:var(--muted)}
 .notes ul,.notes ol{margin:0;padding-left:1.3em}
 .notes a{color:var(--teal);word-break:break-all}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
@@ -111,7 +122,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <div class="eyebrow">FIRE CALCULATOR ／ チワポメ</div>
     <h1>何歳で、仕事を辞められるか</h1>
     <p class="lead">今の年齢、今の資産、毎月の積立。この3つを入れるだけで、年金も退職金も当てにせずに辞められる年齢が出ます。生活費・学費・住宅ローンには、公的な調べの平均値が最初から入っています。</p>
-    <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg>入れた数字は、このページの中だけで計算します。どこにも送りません。</div>
+    <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg>入れた数字そのものは送りません。年齢帯など、個人が分からない形に丸めた集計だけを記録します。</div>
   </header>
 
   <section class="panel inputs" aria-label="3つの入力">
@@ -232,6 +243,15 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     </div>
   </details>
 
+  <section class="panel next">
+    <h2>次に打つ手</h2>
+    <ul class="links">
+      <li><a href="https://note.com/chiwapome_kolin/n/n3207ad5f311a" data-dest="note_72">収入の4分の1を積むだけ。5年で資産5.5倍の会社員</a><span>毎月の積立を増やす仕組み（note の有料記事）</span></li>
+      <li><a href="https://note.com/chiwapome_kolin/membership" data-dest="membership">メンバーシップ（月980円）</a><span>これまでの有料記事9本と、毎週の運用の記録</span></li>
+      <li><a href="https://note.com/chiwapome_kolin" data-dest="note_profile">この道具の作り方と使い方を書いた note</a><span>チワポメの note</span></li>
+    </ul>
+  </section>
+
   <section class="notes">
     <h2>計算の前提</h2>
     <ul>
@@ -258,6 +278,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
       <li>住宅金融支援機構「【フラット35】金利情報」 <a href="https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top">https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top</a></li>
       <li>住宅金融支援機構「住宅ローン利用者の実態調査」 <a href="https://www.jhf.go.jp/files/a/public/jhf/400374088.pdf">https://www.jhf.go.jp/files/a/public/jhf/400374088.pdf</a></li>
     </ol>
+    <p><a href="privacy.html">プライバシーポリシー</a></p>
   </section>
 </main>
 
@@ -561,6 +582,43 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
   new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
   render();
+
+  // 計測（Google アナリティクス）。入れた数字そのものは送らず、帯に丸めた値だけを送る
+  function track(name, params) { try { if (typeof gtag === "function") gtag("event", name, params || {}); } catch (e) {} }
+  function band5(x) { if (x === null || x === undefined || isNaN(x)) return "none"; var lo = Math.floor(x / 5) * 5; return lo + "-" + (lo + 4); }
+  function assetBand(man) {
+    if (man < 500) return "~500"; if (man < 1000) return "500-1000"; if (man < 2000) return "1000-2000";
+    if (man < 3000) return "2000-3000"; if (man < 5000) return "3000-5000"; if (man < 10000) return "5000-10000"; return "10000~";
+  }
+  function saveBand(man) { if (man < 3) return "~3"; if (man < 5) return "3-5"; if (man < 10) return "5-10"; if (man < 20) return "10-20"; return "20~"; }
+  var touched = {}, anyTouch = false, detailUsed = false, sentCombos = {}, viewTimer = null, detailsSent = false;
+  function onTouch(field) {
+    anyTouch = true;
+    if (!touched[field]) { touched[field] = true; track("input_touch", { field: field }); }
+    clearTimeout(viewTimer);
+    viewTimer = setTimeout(sendView, 2000);
+  }
+  function sendView() {
+    if (!anyTouch) return;
+    var a = read(); if (!(a.until > a.age)) return;
+    var p = plan(a);
+    var params = { age_band: band5(a.age), asset_band: assetBand(a.assets / MAN), save_band: saveBand(a.saving / MAN),
+                   fire_age_band: band5(p.earliest0), detail_used: detailUsed };
+    var key = [params.age_band, params.asset_band, params.save_band, params.fire_age_band, params.detail_used].join("|");
+    if (sentCombos[key]) return;
+    sentCombos[key] = true;
+    track("result_view", params);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("main input, main select"), function (el) {
+    var field = el.id.replace(/_r$/, "");
+    var inDetails = $("more").contains(el);
+    var h = function () { if (inDetails) detailUsed = true; onTouch(field); };
+    el.addEventListener("input", h); el.addEventListener("change", h);
+  });
+  $("more").addEventListener("toggle", function () { if ($("more").open && !detailsSent) { detailsSent = true; track("details_open"); } });
+  Array.prototype.forEach.call(document.querySelectorAll("a[data-dest]"), function (el) {
+    el.addEventListener("click", function () { track("outbound_click", { dest: el.getAttribute("data-dest") }); });
+  });
 })();
 </script>
 </body>
