@@ -461,6 +461,25 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       ctx.restore();
     }
   };
+  var pointTag = {
+    id: "pointTag",
+    afterDatasetsDraw: function (c) {
+      c.data.datasets.forEach(function (d, di) {
+        if (!d.tag) return;
+        var i = c.data.labels.indexOf(d.tag.x), el = c.getDatasetMeta(di).data[i];
+        if (!el) return;
+        var ctx = c.ctx; ctx.save(); ctx.font = "700 12px " + css("--body");
+        var tw = ctx.measureText(d.tag.text).width, pad = 5, h = 20;
+        var left = el.x > (c.chartArea.left + c.chartArea.right) / 2;
+        var bx = left ? el.x - 10 - tw - pad * 2 : el.x + 10, by = Math.max(c.chartArea.top, el.y - 30 - h);
+        ctx.fillStyle = css("--surface"); ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.rect(bx, by, tw + pad * 2, h); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(el.x, el.y - 6); ctx.lineTo(left ? bx + tw + pad * 2 : bx, by + h); ctx.stroke();
+        ctx.fillStyle = css("--ink"); ctx.textBaseline = "middle"; ctx.textAlign = "left";
+        ctx.fillText(d.tag.text, bx + pad, by + h / 2); ctx.restore();
+      });
+    }
+  };
   var centerText = {
     id: "centerText",
     afterDraw: function (c) {
@@ -523,9 +542,13 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
             borderColor: css("--gold"), backgroundColor: css("--gold"), borderWidth: 3, pointRadius: 0, tension: 0.25 },
           { label: "辞めるのに要る資産", data: base.rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
             borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 },
-          { label: "4%ルールの目安（支出の25倍）", data: base.rows.map(function (w) { return Math.round(w.F / MAN); }), borderColor: css("--muted"),
-            borderDash: [2, 4], borderWidth: 2, pointRadius: 0, tension: 0.25 }
-        ].filter(function (d) { return show4 || d.label.indexOf("4%") !== 0; })
+          { label: "その年に辞めるなら要る資産（4%ルール）", borderColor: css("--muted"), backgroundColor: css("--muted"),
+            data: base.rows.map(function (w) { return base.four === null || w.x <= base.four.x ? Math.round(w.F / MAN) : null; }),
+            pointRadius: base.rows.map(function (w) { return base.four !== null && w.x === base.four.x ? 5 : 0; }),
+            pointBorderColor: css("--surface"), pointBorderWidth: 2,
+            tag: base.four === null ? null : { x: base.four.x, text: "4%ルールの目標 " + man(base.four.need) },
+            borderDash: [2, 4], borderWidth: 2, tension: 0.25 }
+        ].filter(function (d) { return show4 || d.label.indexOf("4%ルール") < 0; })
       },
       options: {
         responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
@@ -538,9 +561,14 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
           y: { min: 0, grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v >= 10000 ? (v / 10000).toLocaleString("ja-JP") + "億" : v.toLocaleString("ja-JP") + "万"; } } }
         }
       }
+      ,plugins: [pointTag]
     });
-    var lead = "緑の線が赤い点線に届いた年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) +
-      "</strong>、3万円足すと<strong>" + ageText(p3.earliest0) + "</strong>、5万円足すと<strong>" + ageText(p5.earliest0) + "</strong>。";
+    var lead = "緑の線が赤い点線に届いた年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) + "</strong>";
+    if (base.earliest0 !== null && p3.earliest0 === base.earliest0 && p5.earliest0 === base.earliest0) {
+      lead += "。3万円・5万円足しても<strong>" + ageText(base.earliest0) + "</strong>のまま（もう早めるより、辞めたあとの線を見る段階）。";
+    } else {
+      lead += "、3万円足すと<strong>" + ageText(p3.earliest0) + "</strong>、5万円足すと<strong>" + ageText(p5.earliest0) + "</strong>。";
+    }
     if (base.earliest0 !== null) {
       lead += "金色の線は、" + base.earliest0 + "歳で積立を止めて、毎年の支出を取り崩しながら残りを運用した場合だ。" + a.until + "歳まで0を割らない。";
     }
