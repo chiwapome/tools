@@ -81,6 +81,10 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--gold);height:28px}
 .canvas.short{height:240px}
 .canvas.donut{height:300px}
 .hints{display:grid;gap:6px;margin-top:10px}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+.pair>div{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pair .k{font-size:12px;color:var(--muted)}
+.pair .v{font:700 20px/1.3 var(--display);font-variant-numeric:tabular-nums}
 .hint{margin:0;font-size:13px;color:var(--muted)}
 .link{font:700 13px var(--body);color:var(--teal);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .link:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
@@ -158,6 +162,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <div class="label">あなたが辞められる年齢</div>
     <div class="big" id="bigAge"><b>78</b><small>歳</small></div>
     <p class="sub">今の積立のまま続けたら、何歳で辞められるか。年金も退職金も当てにしない答えです。<span id="exampleNote">例として、40代夫婦の平均の貯蓄（1,381万円）が入っています。</span></p>
+    <p class="sub" id="fourNote"></p>
     <div class="chips">
       <div class="chip"><div class="k" id="kTarget">60歳で辞めるのに要る毎月の積立</div><div class="v" id="vTarget">—</div></div>
       <div class="chip"><div class="k">年金と退職金を入れると</div><div class="v" id="vPension">—</div></div>
@@ -165,7 +170,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
   </section>
 
   <section class="panel chart">
-    <h2>資産の推移と、辞められる点</h2>
+    <h2>資産の推移と、辞められる年齢</h2>
     <p class="say" id="say1"></p>
     <div class="canvas"><canvas id="c1" aria-label="資産の推移のグラフ" role="img"></canvas></div>
   </section>
@@ -180,6 +185,10 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <h2>辞めたあとに出ていくお金</h2>
     <p class="say" id="say3"></p>
     <div class="canvas donut"><canvas id="c3" aria-label="辞めたあとの支出の内訳のグラフ" role="img"></canvas></div>
+    <div class="pair">
+      <div><div class="k">辞めてから出ていくお金の合計</div><div class="v" id="vTotal">—</div></div>
+      <div><div class="k">辞める時点で要る額（運用しながら取り崩した場合）</div><div class="v" id="vNeedAt">—</div></div>
+    </div>
     <div class="hints" id="hints3"></div>
   </section>
 
@@ -372,7 +381,17 @@ function plan(a, extra) {
     var m = 12 * (t - a.age), diff = tr.O - tr.P;
     monthly0 = Math.max(0, saving + (r === 0 ? diff / m : diff * (r / 12) / (Math.pow(1 + r / 12, m) - 1)));
   }
-  return { rows: rows, earliest: earliest, earliest0: earliest0, monthly0: monthly0 };
+  // 辞める時点で要る額（運用しながら取り崩して、最後の年にちょうど0になる額）と、辞めたあとの取り崩しの線
+  var at = function (x) { return rows.filter(function (w) { return w.x === x; })[0]; };
+  var needAtRetire = earliest0 === null ? null : at(earliest0).O, draw = [];
+  if (earliest0 !== null) {
+    var A = at(earliest0).P;
+    rows.forEach(function (w) { if (w.x >= earliest0) { draw.push({ x: w.x, A: A }); A = (A - w.N) * rr; } });
+  }
+  // 4%ルール（辞めた最初の年の支出×25）。年金・退職金を当てにしない側
+  var four = null;
+  rows.forEach(function (w) { w.F = 25 * Math.max(0, w.N); if (four === null && w.P >= w.F) four = { x: w.x, need: w.F }; });
+  return { rows: rows, earliest: earliest, earliest0: earliest0, monthly0: monthly0, needAtRetire: needAtRetire, draw: draw, four: four };
 }
 if (typeof module !== "undefined") module.exports = { plan: plan };
 </script>
@@ -479,44 +498,58 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
     Chart.defaults.color = css("--muted");
     var grid = css("--line");
 
-    // ① 資産の推移
-    var last = Math.min(a.until, Math.max(a.target, base.earliest0 || a.until, p3.earliest0 || 0, p5.earliest0 || 0) + 10);
-    var cut = function (pl) { return { rows: pl.rows.filter(function (w) { return w.x <= last; }), earliest0: pl.earliest0 }; };
-    var ages = cut(base).rows.map(function (w) { return w.x; });
-    function line(pl, label, color, width) {
+    // ① 資産の推移と、辞められる年齢
+    var ages = base.rows.map(function (w) { return w.x; });
+    function upTo(pl, label, color, width) { // 積立の線は、その積立で辞められる年まで
       return {
-        label: label, data: pl.rows.map(function (w) { return Math.round(w.P / MAN); }), borderColor: color, backgroundColor: color,
-        borderWidth: width, tension: 0.25,
+        label: label, borderColor: color, backgroundColor: color, borderWidth: width, tension: 0.25,
+        data: pl.rows.map(function (w) { return pl.earliest0 === null || w.x <= pl.earliest0 ? Math.round(w.P / MAN) : null; }),
         pointRadius: pl.rows.map(function (w) { return w.x === pl.earliest0 ? 6 : 0; }),
-        pointHoverRadius: 6, pointBorderColor: css("--surface"), pointBorderWidth: 2
+        pointHoverRadius: 6, pointBorderColor: css("--surface"), pointBorderWidth: 2, spanGaps: false
       };
     }
+    // 4%ルールは30年の取り崩しを調べた研究なので、辞めてから最後の年まで30年以上あるときだけ出す
+    var show4 = base.earliest0 !== null && a.until - base.earliest0 >= 30;
+    var drawMap = {}; base.draw.forEach(function (d) { drawMap[d.x] = Math.round(d.A / MAN); });
     chart("c1", {
       type: "line",
       data: {
         labels: ages,
         datasets: [
-          line(cut(base), "今の積立（" + man1(a.saving) + "）", css("--teal"), 3),
-          line(cut(p3), "+3万円", css("--teal2"), 2),
-          line(cut(p5), "+5万円", css("--teal3"), 2),
-          { label: "辞めるのに要る資産", data: cut(base).rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
-            borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 }
-        ]
+          upTo(base, "今の積立（" + man1(a.saving) + "）", css("--teal"), 3),
+          upTo(p3, "+3万円", css("--teal2"), 2),
+          upTo(p5, "+5万円", css("--teal3"), 2),
+          { label: "辞めたあと（取り崩しながら運用）", data: ages.map(function (x) { return x in drawMap ? drawMap[x] : null; }),
+            borderColor: css("--gold"), backgroundColor: css("--gold"), borderWidth: 3, pointRadius: 0, tension: 0.25 },
+          { label: "辞めるのに要る資産", data: base.rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
+            borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 },
+          { label: "4%ルールの目安（支出の25倍）", data: base.rows.map(function (w) { return Math.round(w.F / MAN); }), borderColor: css("--muted"),
+            borderDash: [2, 4], borderWidth: 2, pointRadius: 0, tension: 0.25 }
+        ].filter(function (d) { return show4 || d.label.indexOf("4%") !== 0; })
       },
       options: {
         responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
         plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 3, padding: 12 } },
-          tooltip: { callbacks: { title: function (i) { return i[0].label + "歳"; }, label: function (i) { return i.dataset.label + ": " + i.parsed.y.toLocaleString("ja-JP") + "万円"; } } }
+          legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 3, padding: 10 } },
+          tooltip: { filter: function (i) { return i.parsed.y !== null; }, callbacks: { title: function (i) { return i[0].label + "歳"; }, label: function (i) { return i.dataset.label + ": " + i.parsed.y.toLocaleString("ja-JP") + "万円"; } } }
         },
         scales: {
           x: { grid: { display: false }, ticks: { maxTicksLimit: 8, callback: function (v) { return this.getLabelForValue(v) + "歳"; } } },
-          y: { grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v >= 10000 ? (v / 10000).toLocaleString("ja-JP") + "億" : v.toLocaleString("ja-JP") + "万"; } } }
+          y: { min: 0, grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v >= 10000 ? (v / 10000).toLocaleString("ja-JP") + "億" : v.toLocaleString("ja-JP") + "万"; } } }
         }
       }
     });
-    $("say1").innerHTML = "緑の線が赤い点線を上回った年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) +
+    var lead = "緑の線が赤い点線に届いた年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) +
       "</strong>、3万円足すと<strong>" + ageText(p3.earliest0) + "</strong>、5万円足すと<strong>" + ageText(p5.earliest0) + "</strong>。";
+    if (base.earliest0 !== null) {
+      lead += "金色の線は、" + base.earliest0 + "歳で積立を止めて、毎年の支出を取り崩しながら残りを運用した場合だ。" + a.until + "歳まで0を割らない。";
+    }
+    $("say1").innerHTML = lead;
+    $("fourNote").innerHTML = !show4
+      ? "残りが30年より短いので、4%ルールの目安は使いません（30年の取り崩しを調べた研究のため）。"
+      : base.four === null
+      ? "比べる目安の4%ルール（トリニティ・スタディ）では、" + a.until + "歳までに届かない。"
+      : "比べる目安: 4%ルール（トリニティ・スタディ）なら、要る資産は辞めた最初の年の支出×25＝<strong>" + man(base.four.need) + "</strong>で、届くのは<strong>" + base.four.x + "歳</strong>。米国の1926〜1995年のデータで最長30年の取り崩しを調べた研究で、日本で同じとは限らない。";
 
     // ② 積立額ごとの辞められる年齢
     var steps = [0, 1, 3, 5, 10, 15];
@@ -569,8 +602,11 @@ if (typeof module !== "undefined") module.exports = { plan: plan };
       : '<p class="hint">税・社会保険料（国保・住民税など）は、家計調査の平均で入っています。市区町村の試算があれば<button class="link" type="button" data-open="tax">詳しく入れる</button>で入れ直せます。</p>');
     if (sum.edu === 0 && sum.loan === 0) hints.push('<p class="hint">子どもや住宅ローンを入れると、内訳が分かれます →<button class="link" type="button" data-open="kid0">詳しく入れる</button></p>');
     $("hints3").innerHTML = hints.join("");
+    var needAt = base.rows.filter(function (w) { return w.x === from; })[0].O;
+    $("vTotal").textContent = man(total);
+    $("vNeedAt").textContent = man(needAt);
     $("say3").innerHTML = from + "歳で辞めてから" + a.until + "歳までに出ていくお金は、将来の値段で<strong>" + man(total) + "</strong>。いちばん大きいのは" +
-      parts.slice().sort(function (x, y) { return y[1] - x[1]; })[0][0] + "。";
+      (parts.length ? parts.slice().sort(function (x, y) { return y[1] - x[1]; })[0][0] : "なし") + "。辞めたあとも残りのお金は運用で増えるので、辞める時点に要るのは合計より少ない<strong>" + man(needAt) + "</strong>で足りる。";
   }
 
   // 入力と連動
