@@ -230,7 +230,7 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
         </div>
       </fieldset>
       <fieldset>
-        <legend>年金・退職金・ほかの収入</legend>
+        <legend>年金・退職金</legend>
         <div class="grid2">
           <div class="f"><label for="pen">本人の公的年金（月・万円）</label><input id="pen" type="number" value="16.6671" step="0.01"><span class="src">モデル年金の本人分（日本年金機構）</span></div>
           <div class="f"><label for="penfrom">本人の年金が始まる年齢</label><input id="penfrom" type="number" value="65"></div>
@@ -239,9 +239,14 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
           <div class="f"><label for="pgrow">年金の伸び（年・%）</label><input id="pgrow" type="number" value="0" step="0.1"><span class="src">0 は増えないと置く</span></div>
           <div class="f"><label for="sev">退職金（辞めた年に受け取る・万円）</label><input id="sev" type="number" value="0" step="10"><span class="src">当てにしないなら0</span></div>
           <div class="f"><label for="locked">資産のうち60歳まで引き出せない分（万円）</label><input id="locked" type="number" value="0" step="10"><span class="src">iDeCo など</span></div>
-          <div class="f"><label for="other">資産のほかに入るお金（月・万円）</label><input id="other" type="number" value="0" step="0.5"><span class="src">家賃収入・副業など</span></div>
-          <div class="f"><label for="ochg">そのお金が変わる年齢</label><input id="ochg" type="number" value="0"><span class="src">変わらなければ 0</span></div>
-          <div class="f"><label for="oafter">変わったあとのお金（月・万円）</label><input id="oafter" type="number" value="0" step="0.5"></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>給料のほかに毎月入るお金（副業・配偶者の手取りなど。不動産は下の欄）</legend>
+        <div class="grid2">
+          <div class="f"><label for="other">毎月入る額（万円）</label><input id="other" type="number" step="0.5" placeholder="例: 5"><span class="src">例: 副業で月5万円を60歳まで → 5／60／0</span></div>
+          <div class="f"><label for="ochg">その額が変わる・終わる年齢</label><input id="ochg" type="number" placeholder="例: 60"><span class="src">ずっと同じなら空欄</span></div>
+          <div class="f"><label for="oafter">その年齢からの額（万円。終わるなら0）</label><input id="oafter" type="number" step="0.5" placeholder="例: 0"></div>
         </div>
       </fieldset>
       <fieldset>
@@ -295,9 +300,9 @@ legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
     <ul>
       <li>今の年齢から1年ずつ、「その年に辞めたら最後の年まで暮らすのにいくら要るか」と「その年までにいくら貯まっているか」を並べ、届いた最初の年齢を出します。60歳までに引き出せない分を入れると、60歳までを手元のお金でまかなえるかも見ます。</li>
       <li>辞めるまでの生活費・学費・ローンは給料から払い、積立は今の額のまま辞める年まで続くと置きます。</li>
-      <li>生活費・学費・国保と住民税・国民年金保険料は今の値段で入れ、毎年、物価の上昇率で増やします。住宅ローンの返済と資産のほかのお金は増えないと置きます。利回りは物価を引く前の名目です。</li>
+      <li>生活費・学費・国保と住民税・国民年金保険料は今の値段で入れ、毎年、物価の上昇率で増やします。住宅ローンの返済と、給料のほかに毎月入るお金は増えないと置きます。利回りは物価を引く前の名目です。</li>
       <li>辞めたあとの税・社会保険料は、家計調査の夫婦とも65歳以上の無職世帯の「非消費支出」（直接税と社会保険料、月32,850円）を、辞めた年から毎年かかると置きます。65歳以上の世帯の値なので、60歳までの国民年金保険料（別に足しています）とは重なりません。</li>
-      <li>不動産は、家賃×（1−空室率）−経費−ローン返済−固定資産税÷12 を毎月の手残りとして、資産のほかのお金に足します。返済が終わった年から返済分が無くなり、売る年齢を入れるとその年から家賃が止まって売った額が入ります。物価が上がっても増えないと置きます。</li>
+      <li>不動産は、家賃×（1−空室率）−経費−ローン返済−固定資産税÷12 を毎月の手残りとして、給料のほかに毎月入るお金に足します。返済が終わった年から返済分が無くなり、売る年齢を入れるとその年から家賃が止まって売った額が入ります。物価が上がっても増えないと置きます。</li>
       <li>「辞めたあとに出ていくお金」は、辞められる年齢（届かなければ辞めたい年齢）から最後の年までの合計で、将来の値段のままです。</li>
     </ul>
     <h2>出典</h2>
