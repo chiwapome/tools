@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>何歳で辞められるか</title>
+<meta name="description" content="今の年齢・資産・毎月の積立の3つを入れると、年金も退職金も当てにせずに仕事を辞められる年齢が出ます。入れた数字はこのページの中だけで計算し、どこにも送りません。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#F3F6F4; --surface:#FFFFFF; --ink:#16282C; --muted:#5B6E70; --line:#D6E0DD;
+  --teal:#1C7A6C; --teal2:#4FA593; --teal3:#9CCFC2; --gold:#D9921A; --gold-soft:#FFF1D6;
+  --coral:#C9503A; --field:#F7FAF9;
+  --hero-bg:#16282C; --hero-ink:#F3F6F4; --hero-line:rgba(243,246,244,.22);
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A1C; --surface:#172528; --ink:#E6EFEC; --muted:#9AB0AC; --line:#2A3C3F;
+    --teal:#5CC2AE; --teal2:#3E9C8A; --teal3:#2E6E63; --gold:#F2B33D; --gold-soft:#3A2C12;
+    --coral:#F07D63; --field:#1D2E31; --hero-bg:#24403F; --hero-ink:#F1F6F4; --hero-line:rgba(241,246,244,.2); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A1C; --surface:#172528; --ink:#E6EFEC; --muted:#9AB0AC; --line:#2A3C3F;
+  --teal:#5CC2AE; --teal2:#3E9C8A; --teal3:#2E6E63; --gold:#F2B33D; --gold-soft:#3A2C12;
+  --coral:#F07D63; --field:#1D2E31; --hero-bg:#24403F; --hero-ink:#F1F6F4; --hero-line:rgba(241,246,244,.2); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:clamp(26px,6.4vw,38px);font-weight:900;letter-spacing:.01em}
+h2{font-size:19px;font-weight:700}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--teal);font-weight:700}
+.lead{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.lock{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:10px}
+.lock svg{flex:none}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.inputs{display:grid;gap:18px}
+.field label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:14px}
+.field .hint{font-weight:400;font-size:12px;color:var(--muted)}
+.numrow{display:flex;align-items:center;gap:12px;margin-top:6px}
+.num{display:flex;align-items:baseline;gap:4px;background:var(--gold-soft);border:2px solid var(--gold);border-radius:10px;padding:4px 10px;flex:none}
+.num input{width:6.2ch;border:0;background:transparent;font:700 24px/1.2 var(--display);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;padding:0}
+.num input:focus{outline:none}
+.num:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
+.num span{font-size:13px;color:var(--muted)}
+input[type=range]{flex:1;min-width:0;accent-color:var(--gold);height:28px}
+
+.result{background:var(--hero-bg);color:var(--hero-ink);border-radius:18px;padding:22px 20px;display:grid;gap:14px}
+.result .label{font-size:13px;letter-spacing:.08em;opacity:.8}
+.big{display:flex;align-items:baseline;gap:6px;font-family:var(--display);font-weight:900;line-height:1}
+.big b{font-size:clamp(84px,24vw,128px);color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.big small{font-size:28px}
+.big .none{font-size:28px;color:var(--gold)}
+.result .sub{font-size:13px;opacity:.75;margin:0}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.chip{border:1px solid var(--hero-line);border-radius:12px;padding:10px 12px}
+.chip .k{font-size:12px;opacity:.75}
+.chip .v{font:700 22px/1.3 var(--display);font-variant-numeric:tabular-nums}
+
+.chart h2{margin-bottom:2px}
+.chart .say{margin:0 0 10px;color:var(--muted);font-size:13.5px}
+.chart .say strong{color:var(--ink)}
+.canvas{position:relative;height:280px}
+.canvas.short{height:240px}
+.canvas.donut{height:300px}
+.hints{display:grid;gap:6px;margin-top:10px}
+.hint{margin:0;font-size:13px;color:var(--muted)}
+.link{font:700 13px var(--body);color:var(--teal);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+details.more{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+details.more>summary{cursor:pointer;list-style:none;padding:16px 18px;font:700 16px var(--display);display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::after{content:"＋";color:var(--teal);font-size:20px}
+details.more[open]>summary::after{content:"−"}
+details.more>summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:14px}
+.more-body{padding:0 18px 18px;display:grid;gap:18px}
+fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:14px 0 0;display:grid;gap:12px}
+legend{font:700 14px var(--display);color:var(--teal);padding:0 0 4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.f{display:grid;gap:4px}
+.f label{font-size:13px;font-weight:500}
+.f .src{font-size:11.5px;color:var(--muted)}
+.f input,.f select{width:100%;font:500 15px var(--body);color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-variant-numeric:tabular-nums}
+.f input:focus,.f select:focus{outline:2px solid var(--teal);outline-offset:0}
+.kid{display:grid;gap:8px;padding:10px;border:1px dashed var(--line);border-radius:10px}
+.kid .stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.btn{font:700 14px var(--body);color:var(--teal);background:transparent;border:1px solid var(--teal);border-radius:999px;padding:8px 16px;cursor:pointer;justify-self:start}
+.btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+.notes{font-size:12.5px;color:var(--muted);display:grid;gap:10px}
+.notes h2{font-size:15px;color:var(--ink)}
+.notes ul,.notes ol{margin:0;padding-left:1.3em}
+.notes a{color:var(--teal);word-break:break-all}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header>
+    <div class="eyebrow">FIRE CALCULATOR ／ チワポメ</div>
+    <h1>何歳で、仕事を辞められるか</h1>
+    <p class="lead">今の年齢、今の資産、毎月の積立。この3つを入れるだけで、年金も退職金も当てにせずに辞められる年齢が出ます。生活費・学費・住宅ローンには、公的な調べの平均値が最初から入っています。</p>
+    <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg>入れた数字は、このページの中だけで計算します。どこにも送りません。</div>
+  </header>
+
+  <section class="panel inputs" aria-label="3つの入力">
+    <div class="field">
+      <label for="age">今の年齢 <span class="hint">本人</span></label>
+      <div class="numrow">
+        <div class="num"><input id="age" type="number" inputmode="numeric" min="20" max="75" step="1" value="46"><span>歳</span></div>
+        <input id="age_r" type="range" min="20" max="75" step="1" value="46" aria-label="今の年齢のスライダー">
+      </div>
+    </div>
+    <div class="field">
+      <label for="assets">今の金融資産 <span class="hint">預金・株・投資信託・iDeCoの合計</span></label>
+      <div class="numrow">
+        <div class="num"><input id="assets" type="number" inputmode="decimal" min="0" max="30000" step="10" value="1381"><span>万円</span></div>
+        <input id="assets_r" type="range" min="0" max="10000" step="10" value="1381" aria-label="今の金融資産のスライダー">
+      </div>
+    </div>
+    <div class="field">
+      <label for="saving">今の毎月の積立 <span class="hint">やめたら0</span></label>
+      <div class="numrow">
+        <div class="num"><input id="saving" type="number" inputmode="decimal" min="0" max="300" step="0.5" value="5"><span>万円</span></div>
+        <input id="saving_r" type="range" min="0" max="50" step="0.5" value="5" aria-label="今の毎月の積立のスライダー">
+      </div>
+    </div>
+  </section>
+
+  <section class="result" aria-live="polite">
+    <div class="label">あなたが辞められる年齢</div>
+    <div class="big" id="bigAge"><b>78</b><small>歳</small></div>
+    <p class="sub">年金も退職金も当てにしない答えです。例として、40代夫婦の平均の貯蓄（1,381万円）が入っています。</p>
+    <div class="chips">
+      <div class="chip"><div class="k" id="kTarget">60歳で辞めるなら、毎月の積立</div><div class="v" id="vTarget">—</div></div>
+      <div class="chip"><div class="k">年金と退職金を入れると</div><div class="v" id="vPension">—</div></div>
+    </div>
+  </section>
+
+  <section class="panel chart">
+    <h2>資産の推移と、辞められる点</h2>
+    <p class="say" id="say1"></p>
+    <div class="canvas"><canvas id="c1" aria-label="資産の推移のグラフ" role="img"></canvas></div>
+  </section>
+
+  <section class="panel chart">
+    <h2>積立を増やすと、何歳まで縮むか</h2>
+    <p class="say" id="say2"></p>
+    <div class="canvas short"><canvas id="c2" aria-label="毎月の積立額ごとの辞められる年齢のグラフ" role="img"></canvas></div>
+  </section>
+
+  <section class="panel chart">
+    <h2>辞めたあとに出ていくお金</h2>
+    <p class="say" id="say3"></p>
+    <div class="canvas donut"><canvas id="c3" aria-label="辞めたあとの支出の内訳のグラフ" role="img"></canvas></div>
+    <div class="hints" id="hints3"></div>
+  </section>
+
+  <details class="more" id="more">
+    <summary>詳しく入れる（家族・学費・住宅ローン・生活費）</summary>
+    <div class="more-body">
+      <fieldset>
+        <legend>目標と期間</legend>
+        <div class="grid2">
+          <div class="f"><label for="target">辞めたい年齢</label><input id="target" type="number" value="60" min="21" max="100"><span class="src">上の「毎月の積立」はこの年齢で出す</span></div>
+          <div class="f"><label for="until">何歳までの分を用意するか</label><input id="until" type="number" value="95" min="60" max="110"><span class="src">長めに置く</span></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>家族と暮らし</legend>
+        <div class="grid2">
+          <div class="f"><label for="spouse">配偶者の今の年齢</label><input id="spouse" type="number" placeholder="空欄なら本人と同じ" min="0" max="100"><span class="src">いなければ 0</span></div>
+          <div class="f"><label for="spend">辞めたあとの生活費（月・家族全員・万円）</label><input id="spend" type="number" value="26.4" step="0.1"><span class="src">夫婦とも65歳以上の無職世帯の平均（家計調査）</span></div>
+          <div class="f"><label for="tax">辞めたあとの国保・住民税など（年・万円）</label><input id="tax" type="number" value="39.42" step="0.01"><span class="src">夫婦とも65歳以上の無職世帯の税・社会保険料の平均 月32,850円（家計調査）。市区町村の試算があれば入れ直す</span></div>
+          <div class="f"><label for="npi">国民年金保険料（月・1人・円）</label><input id="npi" type="number" value="17920" step="10"><span class="src">令和8年度（日本年金機構）。60歳まで払う</span></div>
+          <div class="f"><label for="spays">配偶者も国民年金を払うか</label><select id="spays"><option value="1" selected>払う</option><option value="0">払わない（会社員など）</option></select></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>運用と物価</legend>
+        <div class="grid2">
+          <div class="f"><label for="rate">運用の利回り（年・%）</label><input id="rate" type="number" value="4.67" step="0.01"><span class="src">年金積立金（GPIF）の25年の実績</span></div>
+          <div class="f"><label for="infl">物価の上昇率（年・%）</label><input id="infl" type="number" value="2" step="0.1"><span class="src">日本銀行の目標</span></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>年金・退職金・ほかの収入</legend>
+        <div class="grid2">
+          <div class="f"><label for="pen">本人の公的年金（月・万円）</label><input id="pen" type="number" value="16.6671" step="0.01"><span class="src">モデル年金の本人分（日本年金機構）</span></div>
+          <div class="f"><label for="penfrom">本人の年金が始まる年齢</label><input id="penfrom" type="number" value="65"></div>
+          <div class="f"><label for="spen">配偶者の公的年金（月・万円）</label><input id="spen" type="number" value="7.0608" step="0.01"><span class="src">基礎年金の満額（日本年金機構）</span></div>
+          <div class="f"><label for="spenfrom">配偶者の年金が始まる配偶者の年齢</label><input id="spenfrom" type="number" value="65"></div>
+          <div class="f"><label for="pgrow">年金の伸び（年・%）</label><input id="pgrow" type="number" value="0" step="0.1"><span class="src">0 は増えないと置く</span></div>
+          <div class="f"><label for="sev">退職金（辞めた年に受け取る・万円）</label><input id="sev" type="number" value="0" step="10"><span class="src">当てにしないなら0</span></div>
+          <div class="f"><label for="locked">資産のうち60歳まで引き出せない分（万円）</label><input id="locked" type="number" value="0" step="10"><span class="src">iDeCo など</span></div>
+          <div class="f"><label for="other">資産のほかに入るお金（月・万円）</label><input id="other" type="number" value="0" step="0.5"><span class="src">家賃収入・副業など</span></div>
+          <div class="f"><label for="ochg">そのお金が変わる年齢</label><input id="ochg" type="number" value="0"><span class="src">変わらなければ 0</span></div>
+          <div class="f"><label for="oafter">変わったあとのお金（月・万円）</label><input id="oafter" type="number" value="0" step="0.5"></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>住宅ローン</legend>
+        <div class="grid2">
+          <div class="f"><label for="loantype">住宅ローン</label><select id="loantype"><option value="なし" selected>なし</option><option value="固定">固定</option><option value="変動">変動</option></select><span class="src">選ぶと平均の値が入る</span></div>
+          <div class="f"><label for="loanamt">今の残高（万円）</label><input id="loanamt" type="number" placeholder="空欄なら 3,357（フラット35の平均）" step="10"></div>
+          <div class="f"><label for="loanrate">今の金利（年・%）</label><input id="loanrate" type="number" placeholder="空欄なら 固定3.83／変動1.0" step="0.001"></div>
+          <div class="f"><label for="loanyears">残りの年数</label><input id="loanyears" type="number" placeholder="空欄なら 35"></div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>子どもと学費</legend>
+        <div id="kids" style="display:grid;gap:10px"></div>
+        <div class="grid2">
+          <div class="f"><label for="usd">海外の大学の1年分（ドル）</label><input id="usd" type="number" value="60920"><span class="src">米国の私立4年制の学費と住まい・食事（College Board）</span></div>
+          <div class="f"><label for="fx">1ドルの円</label><input id="fx" type="number" value="150"></div>
+          <div class="f"><label for="hs">私立高校の授業料の支援として引く額（年・円）</label><input id="hs" type="number" value="0"><span class="src">就学支援金を引くなら 457200</span></div>
+          <div class="f"><label for="aid">海外の大学の奨学金で何割引くか</label><input id="aid" type="number" value="0" step="0.1" min="0" max="1"><span class="src">半分なら 0.5</span></div>
+        </div>
+      </fieldset>
+      <button class="btn" id="reset" type="button">全部、平均値に戻す</button>
+    </div>
+  </details>
+
+  <section class="notes">
+    <h2>計算の前提</h2>
+    <ul>
+      <li>今の年齢から1年ずつ、「その年に辞めたら最後の年まで暮らすのにいくら要るか」と「その年までにいくら貯まっているか」を並べ、届いた最初の年齢を出します。60歳までに引き出せない分を入れると、60歳までを手元のお金でまかなえるかも見ます。</li>
+      <li>辞めるまでの生活費・学費・ローンは給料から払い、積立は今の額のまま辞める年まで続くと置きます。</li>
+      <li>生活費・学費・国保と住民税・国民年金保険料は今の値段で入れ、毎年、物価の上昇率で増やします。住宅ローンの返済と資産のほかのお金は増えないと置きます。利回りは物価を引く前の名目です。</li>
+      <li>辞めたあとの税・社会保険料は、家計調査の夫婦とも65歳以上の無職世帯の「非消費支出」（直接税と社会保険料、月32,850円）を、辞めた年から毎年かかると置きます。65歳以上の世帯の値なので、60歳までの国民年金保険料（別に足しています）とは重なりません。</li>
+      <li>「辞めたあとに出ていくお金」は、辞められる年齢（届かなければ辞めたい年齢）から最後の年までの合計で、将来の値段のままです。</li>
+    </ul>
+    <h2>出典</h2>
+    <ol>
+      <li>総務省統計局「家計調査報告（家計収支編）2025年（令和7年）平均結果の概要」 <a href="https://www.stat.go.jp/data/kakei/sokuhou/tsuki/pdf/fies_gaikyo2025.pdf">https://www.stat.go.jp/data/kakei/sokuhou/tsuki/pdf/fies_gaikyo2025.pdf</a></li>
+      <li>総務省「家計調査」（生命保険文化センター「老後の生活費はどれくらい？」） <a href="https://www.jili.or.jp/lifeplan/lifesecurity/1130.html">https://www.jili.or.jp/lifeplan/lifesecurity/1130.html</a></li>
+      <li>日本年金機構「令和8年4月分からの年金額等について」 <a href="https://www.nenkin.go.jp/oshirase/taisetu/kojin/2026/202604/0401.html">https://www.nenkin.go.jp/oshirase/taisetu/kojin/2026/202604/0401.html</a></li>
+      <li>年金積立金管理運用独立行政法人「2025年度 業務概況書会見資料」 <a href="https://www.gpif.go.jp/topics/73509681gpif/2025_kaiken_siryou_.pdf">https://www.gpif.go.jp/topics/73509681gpif/2025_kaiken_siryou_.pdf</a></li>
+      <li>日本銀行「物価安定の目標」 <a href="https://www.boj.or.jp/about/education/oshiete/seisaku/b45.htm">https://www.boj.or.jp/about/education/oshiete/seisaku/b45.htm</a></li>
+      <li>日本年金機構「国民年金の保険料はいくらですか。」 <a href="https://www.nenkin.go.jp/section/faq/kokunen/seido/hokenryo/seidosetsumei/20150331.html">https://www.nenkin.go.jp/section/faq/kokunen/seido/hokenryo/seidosetsumei/20150331.html</a></li>
+      <li>文部科学省「令和5年度子供の学習費調査」 <a href="https://www.mext.go.jp/content/20260116-mxt_chousa01-000039333_1.pdf">https://www.mext.go.jp/content/20260116-mxt_chousa01-000039333_1.pdf</a></li>
+      <li>文部科学省「私立大学等の令和7年度入学者に係る学生納付金等調査結果」 <a href="https://www.mext.go.jp/a_menu/koutou/shinkou/07021403/1412031_00006.htm">https://www.mext.go.jp/a_menu/koutou/shinkou/07021403/1412031_00006.htm</a></li>
+      <li>文部科学省「国立大学と私立大学の授業料等の推移」 <a href="https://www.mext.go.jp/b_menu/shingi/kokuritu/005/gijiroku/attach/1386502.htm">https://www.mext.go.jp/b_menu/shingi/kokuritu/005/gijiroku/attach/1386502.htm</a></li>
+      <li>文部科学省「高等学校等就学支援金制度に関するQ＆A」 <a href="https://www.mext.go.jp/a_menu/shotou/mushouka/1342600.htm">https://www.mext.go.jp/a_menu/shotou/mushouka/1342600.htm</a></li>
+      <li>College Board「Trends in College Pricing and Student Aid 2025」 <a href="https://research.collegeboard.org/media/pdf/Trends-in-College-Pricing-and-Student-Aid-2025-final_1.pdf">https://research.collegeboard.org/media/pdf/Trends-in-College-Pricing-and-Student-Aid-2025-final_1.pdf</a></li>
+      <li>住宅金融支援機構「2025年度フラット35利用者調査」 <a href="https://www.jhf.go.jp/files/topics/4941_ext_99_1.pdf">https://www.jhf.go.jp/files/topics/4941_ext_99_1.pdf</a></li>
+      <li>住宅金融支援機構「【フラット35】金利情報」 <a href="https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top">https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top</a></li>
+      <li>住宅金融支援機構「住宅ローン利用者の実態調査」 <a href="https://www.jhf.go.jp/files/a/public/jhf/400374088.pdf">https://www.jhf.go.jp/files/a/public/jhf/400374088.pdf</a></li>
+    </ol>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script id="calc">
+// 計算（FIREできる年齢の表.xlsx の「年ごと」シート、retire_calc.py と同じ式）。DOM を触らない。
+var SCHOOL = { // 今の値段・1年・子ども1人（公立・国公立, 私立）
+  kinder: [184646, 347338], elem: [366599, 1741516], jh: [542450, 1560359], hs: [596954, 1179261],
+  univYear: [535800, 1140619], univEntry: [282000, 240365]
+};
+var LOAN_DEFAULT = { amount: 33570000, fixed: 0.0383, variable: 0.01, years: 35 };
+
+function childCost(c, ch, o) { // ch = [幼稚園, 小学校, 中学校, 高校, 大学]
+  function pick(i, pair, minus) { return ch[i] === "私立" ? pair[1] - (minus || 0) : (ch[i] === "なし" ? 0 : pair[0]); }
+  if (c >= 3 && c <= 5) return pick(0, SCHOOL.kinder);
+  if (c >= 6 && c <= 11) return pick(1, SCHOOL.elem);
+  if (c >= 12 && c <= 14) return pick(2, SCHOOL.jh);
+  if (c >= 15 && c <= 17) return pick(3, SCHOOL.hs, o.hs);
+  if (c >= 18 && c <= 21) {
+    if (ch[4] === "海外") return o.usd * o.fx * (1 - o.aid);
+    if (ch[4] === "国公立") return SCHOOL.univYear[0] + (c === 18 ? SCHOOL.univEntry[0] : 0);
+    if (ch[4] === "私立") return SCHOOL.univYear[1] + (c === 18 ? SCHOOL.univEntry[1] : 0);
+  }
+  return 0;
+}
+
+function loanTerms(a) {
+  if (a.loantype === "なし") return { amt: 0, rate: 0, years: 0 };
+  return {
+    amt: a.loanamt == null ? LOAN_DEFAULT.amount : a.loanamt,
+    rate: a.loanrate == null ? (a.loantype === "固定" ? LOAN_DEFAULT.fixed : LOAN_DEFAULT.variable) : a.loanrate,
+    years: a.loanyears == null ? LOAN_DEFAULT.years : a.loanyears
+  };
+}
+
+// a: 円・年・小数の利率。extra: 毎月の積立に足す額（円）。
+function plan(a, extra) {
+  extra = extra || 0;
+  var r = a.rate, rr = 1 + r, saving = a.saving + extra;
+  var spouse = a.spouse == null ? a.age : a.spouse;
+  var L = loanTerms(a);
+  var pay = (L.amt > 0 && L.years > 0) ? (L.rate === 0 ? L.amt / (L.years * 12) : L.amt * (L.rate / 12) / (1 - Math.pow(1 + L.rate / 12, -L.years * 12))) : 0;
+  var rows = [];
+  for (var x = a.age; x <= a.until; x++) {
+    var n = x - a.age, p = Math.pow(1 + a.infl, n), sp = spouse > 0 ? spouse + n : null;
+    var live = a.spend * 12 * p;
+    var edu = 0;
+    a.kids.forEach(function (k) { if (k.age != null) edu += childCost(k.age + n, k.stages, a); });
+    edu *= p;
+    var loan = (L.amt > 0 && L.years > 0 && x < a.age + L.years) ? pay * 12 : 0;
+    var payers = (x < 60 ? 1 : 0) + ((sp !== null && a.spays === 1 && sp < 60) ? 1 : 0);
+    var taxins = (a.tax + a.npi * 12 * payers) * p;
+    var other = ((a.ochg === 0 || x < a.ochg) ? a.other : a.oafter) * 12;
+    var pen = (x >= a.penfrom ? a.pen * 12 * Math.pow(1 + a.pgrow, n) : 0)
+            + ((sp !== null && sp >= a.spenfrom) ? a.spen * 12 * Math.pow(1 + a.pgrow, n) : 0);
+    var H = live + edu + loan + taxins - other - pen;
+    var ann = r === 0 ? saving * 12 * n : saving * (Math.pow(1 + r / 12, 12 * n) - 1) / (r / 12);
+    var J = a.assets * Math.pow(rr, n) + ann + a.sev;
+    var lockedNow = a.locked * Math.pow(rr, n);
+    rows.push({ x: x, live: live, edu: edu, loan: loan, taxins: taxins, H: H, N: H + pen, J: J, P: J - a.sev, L: J - lockedNow, R: J - a.sev - lockedNow });
+  }
+  var nI = 0, nO = 0, nK = 0, nQ = 0;
+  for (var i = rows.length - 1; i >= 0; i--) {
+    var w = rows[i], nextAge = i + 1 < rows.length ? rows[i + 1].x : null;
+    w.I = Math.max(0, w.H + (nextAge === null ? 0 : nI / rr));
+    w.O = Math.max(0, w.N + (nextAge === null ? 0 : nO / rr));
+    w.K = w.x >= 60 ? 0 : Math.max(0, w.H + ((nextAge === null || nextAge >= 60) ? 0 : nK / rr));
+    w.Q = w.x >= 60 ? 0 : Math.max(0, w.N + ((nextAge === null || nextAge >= 60) ? 0 : nQ / rr));
+    nI = w.I; nO = w.O; nK = w.K; nQ = w.Q;
+  }
+  var earliest = null, earliest0 = null;
+  rows.forEach(function (w) {
+    if (earliest === null && w.J >= w.I && w.L >= w.K) earliest = w.x;
+    if (earliest0 === null && w.P >= w.O && w.R >= w.Q) earliest0 = w.x;
+  });
+  var monthly0 = null, t = a.target;
+  var tr = rows.filter(function (w) { return w.x === t; })[0];
+  if (t > a.age && tr) {
+    var m = 12 * (t - a.age), short = Math.max(0, tr.O - tr.P);
+    monthly0 = saving + (short === 0 ? 0 : (r === 0 ? short / m : short * (r / 12) / (Math.pow(1 + r / 12, m) - 1)));
+  }
+  return { rows: rows, earliest: earliest, earliest0: earliest0, monthly0: monthly0 };
+}
+if (typeof module !== "undefined") module.exports = { plan: plan };
+</script>
+
+<script>
+(function () {
+  var MAN = 10000;
+  var $ = function (id) { return document.getElementById(id); };
+  var STAGES = [["幼稚園", ["公立", "私立", "なし"]], ["小学校", ["公立", "私立"]], ["中学校", ["公立", "私立"]], ["高校", ["公立", "私立"]], ["大学", ["国公立", "私立", "海外", "行かない"]]];
+
+  // 子ども3人分の欄
+  var kidsBox = $("kids");
+  for (var k = 0; k < 3; k++) {
+    var html = '<div class="kid"><div class="f"><label for="kid' + k + '">子ども' + (k + 1) + 'の今の年齢</label><input id="kid' + k + '" type="number" min="0" max="30" placeholder="いなければ空欄"></div><div class="stages">';
+    STAGES.forEach(function (s, j) {
+      html += '<div class="f"><label for="kid' + k + 's' + j + '">' + s[0] + '</label><select id="kid' + k + 's' + j + '">' +
+        s[1].map(function (v) { return '<option>' + v + '</option>'; }).join("") + '</select></div>';
+    });
+    kidsBox.insertAdjacentHTML("beforeend", html + "</div></div>");
+  }
+
+  var defaults = {};
+  Array.prototype.forEach.call(document.querySelectorAll("input,select"), function (el) { if (el.id) defaults[el.id] = el.value; });
+
+  function num(id) { var v = $(id).value; return v === "" ? null : Number(v); }
+  function val(id, d) { var v = num(id); return v === null || isNaN(v) ? d : v; }
+
+  function read() {
+    var kids = [];
+    for (var k = 0; k < 3; k++) {
+      kids.push({ age: num("kid" + k), stages: [0, 1, 2, 3, 4].map(function (j) { return $("kid" + k + "s" + j).value; }) });
+    }
+    var sp = num("spouse");
+    return {
+      age: Math.round(val("age", 46)), assets: val("assets", 0) * MAN, saving: val("saving", 0) * MAN,
+      target: Math.round(val("target", 60)), until: Math.round(val("until", 95)), spouse: sp,
+      spend: val("spend", 26.4) * MAN, rate: val("rate", 4.67) / 100, infl: val("infl", 2) / 100,
+      tax: val("tax", 39.42) * MAN, npi: val("npi", 17920), spays: Number($("spays").value),
+      pen: val("pen", 0) * MAN, penfrom: val("penfrom", 65), spen: val("spen", 0) * MAN, spenfrom: val("spenfrom", 65),
+      pgrow: val("pgrow", 0) / 100, sev: val("sev", 0) * MAN, locked: val("locked", 0) * MAN,
+      other: val("other", 0) * MAN, ochg: val("ochg", 0), oafter: val("oafter", 0) * MAN,
+      loantype: $("loantype").value,
+      loanamt: num("loanamt") === null ? null : num("loanamt") * MAN,
+      loanrate: num("loanrate") === null ? null : num("loanrate") / 100,
+      loanyears: num("loanyears"),
+      kids: kids, usd: val("usd", 60920), fx: val("fx", 150), hs: val("hs", 0), aid: val("aid", 0)
+    };
+  }
+
+  function man(yen) { var m = Math.round(yen / MAN), oku = Math.floor(m / 10000), rest = m % 10000; return oku > 0 ? oku + "億" + (rest ? rest.toLocaleString("ja-JP") + "万円" : "円") : m.toLocaleString("ja-JP") + "万円"; }
+  function man1(yen) { var v = yen / MAN; return (v >= 100 ? Math.round(v).toLocaleString("ja-JP") : (Math.round(v * 10) / 10).toLocaleString("ja-JP")) + "万円"; }
+  function ageText(x) { return x === null ? "届かない" : x + "歳"; }
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var charts = {};
+  function chart(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart($(id), cfg); }
+
+  var barLabels = {
+    id: "barLabels",
+    afterDatasetsDraw: function (c) {
+      var ctx = c.ctx, meta = c.getDatasetMeta(0);
+      ctx.save(); ctx.font = "700 13px " + css("--body"); ctx.fillStyle = css("--ink"); ctx.textAlign = "center";
+      meta.data.forEach(function (bar, i) {
+        var v = c.data.datasets[0].data[i];
+        ctx.fillText(v === null ? "届かない" : v + "歳", bar.x, (v === null ? c.chartArea.bottom : bar.y) - 6);
+      });
+      ctx.restore();
+    }
+  };
+  var centerText = {
+    id: "centerText",
+    afterDraw: function (c) {
+      var t = c.options.plugins.centerText; if (!t) return;
+      var ctx = c.ctx, a = c.chartArea, cx = (a.left + a.right) / 2, cy = (a.top + a.bottom) / 2;
+      ctx.save(); ctx.textAlign = "center"; ctx.fillStyle = css("--muted"); ctx.font = "500 11px " + css("--body");
+      ctx.fillText("合計", cx, cy - 10); ctx.fillStyle = css("--ink"); ctx.font = "700 16px " + css("--display");
+      ctx.fillText(t, cx, cy + 12); ctx.restore();
+    }
+  };
+
+  function render() {
+    if (typeof Chart === "undefined") return;
+    var a = read();
+    if (!(a.until > a.age)) return;
+    var base = plan(a), p3 = plan(a, 3 * MAN), p5 = plan(a, 5 * MAN);
+
+    // 大きな答え
+    $("bigAge").innerHTML = base.earliest0 === null
+      ? '<span class="none">' + a.until + '歳までに届かない</span>'
+      : "<b>" + base.earliest0 + "</b><small>歳</small>";
+    $("kTarget").textContent = a.target + "歳で辞めるなら、毎月の積立";
+    $("vTarget").textContent = base.monthly0 === null ? "辞めたい年齢を今より後に" : man1(base.monthly0);
+    $("vPension").textContent = ageText(base.earliest);
+
+    Chart.defaults.font.family = css("--body");
+    Chart.defaults.color = css("--muted");
+    var grid = css("--line");
+
+    // ① 資産の推移
+    var last = Math.min(a.until, Math.max(a.target, base.earliest0 || a.until, p3.earliest0 || 0, p5.earliest0 || 0) + 10);
+    var cut = function (pl) { return { rows: pl.rows.filter(function (w) { return w.x <= last; }), earliest0: pl.earliest0 }; };
+    var ages = cut(base).rows.map(function (w) { return w.x; });
+    function line(pl, label, color, width) {
+      return {
+        label: label, data: pl.rows.map(function (w) { return Math.round(w.P / MAN); }), borderColor: color, backgroundColor: color,
+        borderWidth: width, tension: 0.25,
+        pointRadius: pl.rows.map(function (w) { return w.x === pl.earliest0 ? 6 : 0; }),
+        pointHoverRadius: 6, pointBorderColor: css("--surface"), pointBorderWidth: 2
+      };
+    }
+    chart("c1", {
+      type: "line",
+      data: {
+        labels: ages,
+        datasets: [
+          line(cut(base), "今の積立（" + man1(a.saving) + "）", css("--teal"), 3),
+          line(cut(p3), "+3万円", css("--teal2"), 2),
+          line(cut(p5), "+5万円", css("--teal3"), 2),
+          { label: "辞めるのに要る資産", data: cut(base).rows.map(function (w) { return Math.round(w.O / MAN); }), borderColor: css("--coral"),
+            borderDash: [6, 5], borderWidth: 2, pointRadius: 0, tension: 0.25 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 3, padding: 12 } },
+          tooltip: { callbacks: { title: function (i) { return i[0].label + "歳"; }, label: function (i) { return i.dataset.label + ": " + i.parsed.y.toLocaleString("ja-JP") + "万円"; } } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 8, callback: function (v) { return this.getLabelForValue(v) + "歳"; } } },
+          y: { grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v >= 10000 ? (v / 10000).toLocaleString("ja-JP") + "億" : v.toLocaleString("ja-JP") + "万"; } } }
+        }
+      }
+    });
+    $("say1").innerHTML = "緑の線が赤い点線を上回った年に辞められる。今の積立なら<strong>" + ageText(base.earliest0) +
+      "</strong>、3万円足すと<strong>" + ageText(p3.earliest0) + "</strong>、5万円足すと<strong>" + ageText(p5.earliest0) + "</strong>。";
+
+    // ② 積立額ごとの辞められる年齢
+    var steps = [0, 1, 3, 5, 10, 15];
+    var res = steps.map(function (s) { return s === 0 ? base : (s === 3 ? p3 : (s === 5 ? p5 : plan(a, s * MAN))); });
+    var gold = css("--gold"), teal3 = css("--teal3");
+    chart("c2", {
+      type: "bar",
+      data: {
+        labels: steps.map(function (s) { return man1(a.saving + s * MAN); }),
+        datasets: [{ data: res.map(function (q) { return q.earliest0; }), backgroundColor: steps.map(function (s) { return s === 0 ? gold : teal3; }), borderRadius: 6, maxBarThickness: 46 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, layout: { padding: { top: 22 } },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (i) { return i.parsed.y === null ? "届かない" : i.parsed.y + "歳"; } } } },
+        scales: {
+          x: { grid: { display: false }, title: { display: true, text: "毎月の積立" } },
+          y: { min: a.age, max: a.until, grid: { color: grid }, border: { display: false }, ticks: { maxTicksLimit: 6, callback: function (v) { return v + "歳"; } } }
+        }
+      },
+      plugins: [barLabels]
+    });
+    var best = res[res.length - 1].earliest0;
+    $("say2").innerHTML = "金色が今の積立。毎月15万円足すと<strong>" + ageText(best) + "</strong>まで縮む。";
+
+    // ③ 辞めたあとの支出の内訳
+    var from = base.earliest0 === null ? a.target : base.earliest0;
+    var sum = { live: 0, edu: 0, loan: 0, taxins: 0 };
+    base.rows.forEach(function (w) { if (w.x >= from) { sum.live += w.live; sum.edu += w.edu; sum.loan += w.loan; sum.taxins += w.taxins; } });
+    var parts = [["生活費", sum.live, css("--teal")], ["学費", sum.edu, css("--gold")], ["住宅ローン", sum.loan, css("--coral")], [a.tax > 0 ? "税・社会保険料" : "国民年金保険料", sum.taxins, css("--teal3")]]
+      .filter(function (q) { return Math.round(q[1] / MAN) > 0; });
+    var total = parts.reduce(function (s, q) { return s + q[1]; }, 0);
+    chart("c3", {
+      type: "doughnut",
+      data: { labels: parts.map(function (q) { return q[0]; }), datasets: [{ data: parts.map(function (q) { return Math.round(q[1] / MAN); }), backgroundColor: parts.map(function (q) { return q[2]; }), borderColor: css("--surface"), borderWidth: 2 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: "62%",
+        plugins: {
+          legend: { position: window.innerWidth < 560 ? "bottom" : "right", labels: { boxWidth: 12, padding: 10, generateLabels: function (c) {
+            return c.data.labels.map(function (l, i) { return { text: l + " " + c.data.datasets[0].data[i].toLocaleString("ja-JP") + "万", fillStyle: c.data.datasets[0].backgroundColor[i], strokeStyle: "transparent", fontColor: css("--ink"), index: i }; });
+          } } },
+          tooltip: { callbacks: { label: function (i) { return i.label + ": " + i.parsed.toLocaleString("ja-JP") + "万円"; } } },
+          centerText: total >= 1e8 ? (Math.round(total / 1e7) / 10).toLocaleString("ja-JP") + "億円" : man(total)
+        }
+      },
+      plugins: [centerText]
+    });
+    var hints = [];
+    hints.push(a.tax === 0
+      ? '<p class="hint">国保と住民税は入っていません。住んでいる市区町村の試算を<button class="link" type="button" data-open="tax">詳しく入れる</button>に入れると足されます。</p>'
+      : '<p class="hint">税・社会保険料（国保・住民税など）は、家計調査の平均で入っています。市区町村の試算があれば<button class="link" type="button" data-open="tax">詳しく入れる</button>で入れ直せます。</p>');
+    if (sum.edu === 0 && sum.loan === 0) hints.push('<p class="hint">子どもや住宅ローンを入れると、内訳が分かれます →<button class="link" type="button" data-open="kid0">詳しく入れる</button></p>');
+    $("hints3").innerHTML = hints.join("");
+    $("say3").innerHTML = from + "歳で辞めてから" + a.until + "歳までに出ていくお金は、将来の値段で<strong>" + man(total) + "</strong>。いちばん大きいのは" +
+      parts.slice().sort(function (x, y) { return y[1] - x[1]; })[0][0] + "。";
+  }
+
+  // 入力と連動
+  function pair(n, r) {
+    $(n).addEventListener("input", function () { $(r).value = $(n).value; schedule(); });
+    $(r).addEventListener("input", function () { $(n).value = $(r).value; schedule(); });
+  }
+  pair("age", "age_r"); pair("assets", "assets_r"); pair("saving", "saving_r");
+  var timer = null;
+  function schedule() { clearTimeout(timer); timer = setTimeout(render, 60); }
+  Array.prototype.forEach.call($("more").querySelectorAll("input,select"), function (el) {
+    el.addEventListener("input", schedule); el.addEventListener("change", schedule);
+  });
+  $("hints3").addEventListener("click", function (e) {
+    var id = e.target && e.target.getAttribute("data-open"); if (!id) return;
+    $("more").open = true; $(id).scrollIntoView({ block: "center" }); $(id).focus({ preventScroll: true });
+  });
+  $("reset").addEventListener("click", function () {
+    Object.keys(defaults).forEach(function (id) {
+      if ($("more").contains($(id))) $(id).value = defaults[id];
+    });
+    render();
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", render);
+  }
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  render();
+})();
+</script>
+</body>
+</html>
