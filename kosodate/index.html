@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>うちの手元に残る額</title>
+<meta name="description" content="額面年収・子どもの人数・子どもの年齢を入れると、児童手当と扶養控除で減る税金から子育て支援金を引いた「うちの手元に残る額」（年）と、2009年の制度との差が出ます。入れた数字はどこにも送りません。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="チワポメ">
+<meta property="og:title" content="児童手当−税金−子育て支援金。うちの手元に残る額（年）">
+<meta property="og:description" content="年収と子どもの年齢を入れるだけ。児童手当・扶養控除で減る税金・子育て支援金を足し引きした年額と、2009年の制度との差が出る無料の道具。">
+<meta property="og:url" content="https://chiwapome.github.io/tools/kosodate/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="児童手当−税金−子育て支援金。うちの手元に残る額（年）">
+<meta name="twitter:description" content="年収と子どもの年齢を入れるだけ。児童手当・扶養控除で減る税金・子育て支援金を足し引きした年額と、2009年の制度との差が出る無料の道具。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#F6F4EE; --surface:#FFFFFF; --ink:#22262A; --muted:#62676B; --line:#E3DECF;
+  --gold:#C9A227; --gold-ink:#8A6D0E; --gold-soft:#F7EFD2; --field:#FBF8EF;
+  --green:#1E7F4F; --green-soft:#E3F4EA; --red:#C0392B; --red-soft:#FBE5E2;
+  --bar-a:#C9A227; --bar-b:#7E9A5A; --bar-c:#C0392B; --bar-d:#22262A;
+  --hero-bg:#22262A; --hero-ink:#F6F4EE; --hero-line:rgba(246,244,238,.22);
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  --body:"Noto Sans JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171A; --surface:#1F2226; --ink:#ECE8DD; --muted:#A7A398; --line:#33363B;
+    --gold:#E2BC45; --gold-ink:#E2BC45; --gold-soft:#3A3115; --field:#26292E;
+    --green:#5FCB93; --green-soft:#173A28; --red:#F08A7B; --red-soft:#43211D;
+    --bar-a:#E2BC45; --bar-b:#9DBB78; --bar-c:#F08A7B; --bar-d:#ECE8DD;
+    --hero-bg:#2A2D33; --hero-ink:#F1EEE6; --hero-line:rgba(241,238,230,.2); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171A; --surface:#1F2226; --ink:#ECE8DD; --muted:#A7A398; --line:#33363B;
+  --gold:#E2BC45; --gold-ink:#E2BC45; --gold-soft:#3A3115; --field:#26292E;
+  --green:#5FCB93; --green-soft:#173A28; --red:#F08A7B; --red-soft:#43211D;
+  --bar-a:#E2BC45; --bar-b:#9DBB78; --bar-c:#F08A7B; --bar-d:#ECE8DD;
+  --hero-bg:#2A2D33; --hero-ink:#F1EEE6; --hero-line:rgba(241,238,230,.2); color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:22px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.35}
+h1{font-size:clamp(25px,6.4vw,36px);font-weight:900;letter-spacing:.01em}
+h2{font-size:19px;font-weight:700}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--gold-ink);font-weight:700}
+.lead{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.lock{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:10px}
+.lock svg{flex:none}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.inputs{display:grid;gap:18px}
+.field>label,.field>.lab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:14px}
+.hint{font-weight:400;font-size:12px;color:var(--muted)}
+.numrow{display:flex;align-items:center;gap:12px;margin-top:6px}
+.num{display:flex;align-items:baseline;gap:4px;background:var(--gold-soft);border:2px solid var(--gold);border-radius:10px;padding:4px 10px;flex:none}
+.num input{width:5.2ch;border:0;background:transparent;font:700 24px/1.2 var(--display);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;padding:0}
+.num input:focus{outline:none}
+.num:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
+.num span{font-size:13px;color:var(--muted)}
+input[type=range]{flex:1;min-width:0;accent-color:var(--gold);height:28px}
+.count{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.count button{font:700 18px var(--display);width:48px;height:44px;border-radius:10px;border:2px solid var(--line);background:var(--field);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.count button[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft)}
+.count button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ages{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:8px}
+.age{display:grid;gap:2px}
+.age .k{font-size:12px;color:var(--muted)}
+.age .num input{width:3ch}
+.err{margin:0;font-size:13px;font-weight:700;color:var(--red)}
+
+.result{background:var(--hero-bg);color:var(--hero-ink);border-radius:18px;padding:22px 20px;display:grid;gap:14px}
+.result .label{font-size:13px;letter-spacing:.08em;opacity:.8}
+.big{display:flex;align-items:baseline;gap:6px;font-family:var(--display);font-weight:900;line-height:1;flex-wrap:wrap}
+.big b{font-size:clamp(46px,14vw,84px);color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.big small{font-size:24px}
+.result .sub{font-size:13px;opacity:.75;margin:0}
+.diff{display:grid;gap:4px;border:1px solid var(--hero-line);border-radius:12px;padding:12px 14px}
+.diff .k{font-size:12.5px;opacity:.8}
+.pill{justify-self:start;display:inline-block;font:900 clamp(26px,8vw,40px)/1.2 var(--display);font-variant-numeric:tabular-nums;padding:4px 14px;border-radius:10px}
+.pill.plus{background:#E3F4EA;color:#1E7F4F}
+.pill.minus{background:#FBE5E2;color:#C0392B}
+.pill.na{background:transparent;padding:0;font-size:20px;color:var(--hero-ink)}
+.diff .note{font-size:12.5px;opacity:.75;margin:0}
+
+.kids{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.kids th,.kids td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.kids th:first-child,.kids td:first-child{text-align:left}
+.kids thead th{font-size:12px;color:var(--muted);font-weight:500}
+.kids tfoot td{font-weight:700}
+.kids .neg{color:var(--red)}
+.tablewrap{overflow-x:auto;margin-top:8px}
+
+.bars{display:grid;gap:12px;margin-top:10px}
+.bar{display:grid;gap:4px}
+.bar .top{display:flex;justify-content:space-between;gap:8px;font-size:13.5px}
+.bar .top b{font-variant-numeric:tabular-nums}
+.track{height:18px;background:var(--field);border-radius:6px;overflow:hidden}
+.fill{height:100%;border-radius:6px;transition:width .3s ease}
+.say{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+
+.cta{display:grid;gap:12px;justify-items:start;padding:18px;border-radius:14px;background:var(--gold-soft);border:1px solid var(--gold)}
+.cta p{margin:0;font:700 16px/1.6 var(--display);color:var(--ink)}
+.cta a{display:inline-block;background:var(--gold);color:#22262A;font:700 15px var(--body);text-decoration:none;padding:12px 20px;border-radius:999px}
+.cta a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+.notes{font-size:12.5px;color:var(--muted);display:grid;gap:10px}
+.notes h2{font-size:15px;color:var(--ink)}
+.notes ul,.notes ol{margin:0;padding-left:1.3em}
+.notes a{color:var(--gold-ink);word-break:break-all}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header>
+    <div class="eyebrow">子育てのお金 ／ チワポメ</div>
+    <h1>児童手当から、税金と支援金を引いたら、うちにいくら残るか</h1>
+    <p class="lead">額面年収、子どもの人数、子どもの年齢の3つを入れると、児童手当と扶養控除で減る税金から子育て支援金を引いた「うちの手元に残る額」（年）と、2009年の制度との差が出ます。</p>
+    <div class="lock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg>入れた数字はどこにも送りません。計算はこの画面の中だけです。</div>
+  </header>
+
+  <section class="panel inputs" aria-label="3つの入力">
+    <div class="field">
+      <label for="income">額面年収 <span class="hint">給与の額面（手取りではなく）</span></label>
+      <div class="numrow">
+        <div class="num"><input id="income" type="number" inputmode="numeric" min="100" max="3000" step="10" value="600"><span>万円</span></div>
+        <input id="income_r" type="range" min="100" max="1500" step="10" value="600" aria-label="額面年収のスライダー">
+      </div>
+    </div>
+    <div class="field">
+      <div class="lab" id="countLab">子どもの人数 <span class="hint">19〜22歳の子も入れる</span></div>
+      <div class="count" role="group" aria-labelledby="countLab" id="count"></div>
+    </div>
+    <div class="field">
+      <div class="lab">子どもの年齢 <span class="hint">今年の12月31日の年齢。順番は自由</span></div>
+      <div class="ages" id="ages"></div>
+    </div>
+    <p class="err" id="err" hidden></p>
+  </section>
+
+  <section class="result" aria-live="polite">
+    <div class="label">うちの手元に残る額（年）</div>
+    <div class="big"><b id="vTotal">—</b><small>円</small></div>
+    <p class="sub" id="vTotalSub">児童手当＋扶養控除で減る税金−子育て支援金</p>
+    <div class="diff">
+      <div class="k">2009年の制度と比べて</div>
+      <span class="pill" id="vDiff">—</span>
+      <p class="note" id="vDiffNote"></p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>内訳</h2>
+    <div class="bars" id="bars"></div>
+    <p class="say" id="say"></p>
+  </section>
+
+  <section class="panel">
+    <h2>子ども1人ずつ</h2>
+    <div class="tablewrap">
+      <table class="kids">
+        <thead><tr><th>子ども</th><th>第何子</th><th>児童手当</th><th>減る税金</th></tr></thead>
+        <tbody id="kidRows"></tbody>
+        <tfoot><tr><td colspan="3">子育て支援金（家で1回）</td><td class="neg" id="vShien">—</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="say">第何子は、年齢の高い子から数えます。19〜22歳の子は児童手当も扶養控除の上乗せもありませんが、第何子の数には入ります（第3子以降は児童手当が月3万円）。</p>
+  </section>
+
+  <section class="cta" aria-label="次の道具">
+    <p>手元に残るお金を、何歳まで働けば足りるかに変える → 何歳で辞められるか、3つ入れるだけで出る無料の道具</p>
+    <a href="../fire/">何歳で辞められるかを出す</a>
+  </section>
+
+  <section class="notes">
+    <h2>計算の前提</h2>
+    <ul>
+      <li>給与所得だけの会社員として、令和8年分で計算します。年収は額面です。</li>
+      <li>社会保険料は年収の15%と置きます。控除は給与所得控除（令和8・9年分）・基礎控除・社会保険料控除・扶養控除だけで、配偶者控除などは入れていません。</li>
+      <li>基礎控除は令和7年分の額で概算しています。令和8年分は上がるので、所得税の税率は同じか1段下がる側で、扶養控除で減る税金は実際にはこの数字以下になります。</li>
+      <li>扶養控除で減る税金は、16〜18歳の子1人につき 38万円×所得税率×1.021（復興税）＋33万円×住民税10% です。</li>
+      <li>児童手当は年額で、3歳未満が18万円、3歳〜18歳が12万円、第3子以降は36万円です。年齢は12月31日の年齢で数えます。</li>
+      <li>子育て支援金は 年収×0.23%÷2（本人の分）を、家で1回引きます。夫婦とも会社員なら、配偶者の分（配偶者の年収×0.115%）も別に引かれます。</li>
+      <li>2009年の制度は、児童手当（3歳未満 月1万円、3歳〜小学校修了前の第1・2子 月5,000円、第3子以降 月1万円、中学生以上なし）と、年少扶養控除（所得税38万円・住民税33万円）、16〜18歳の扶養控除（所得税63万円・住民税45万円）で計算します。第何子は今と同じ数え方です。</li>
+      <li>年収700万円以上は、2009年の児童手当の所得制限の額を確かめきれていないため、比べていません。物価や賃金の変化は入れていません。</li>
+    </ul>
+    <h2>出典</h2>
+    <ol>
+      <li>国税庁「No.1180 扶養控除」（令和8年4月1日現在） <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1180.htm">https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1180.htm</a></li>
+      <li>財務省「扶養控除の見直しについて（22年度改正）」 <a href="https://www.mof.go.jp/tax_policy/summary/income/047a.htm">https://www.mof.go.jp/tax_policy/summary/income/047a.htm</a> 、総務省「平成22年度税制改正大綱（地方税関係）の要旨」 <a href="https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/pdf/091228_02.pdf">https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/pdf/091228_02.pdf</a></li>
+      <li>こども家庭庁「児童手当制度のご案内」 <a href="https://www.cfa.go.jp/policies/kokoseido/jidouteate/annai">https://www.cfa.go.jp/policies/kokoseido/jidouteate/annai</a> 、「もっと子育て応援！児童手当」 <a href="https://www.cfa.go.jp/policies/kokoseido/jidouteate/mottoouen">https://www.cfa.go.jp/policies/kokoseido/jidouteate/mottoouen</a></li>
+      <li>こども家庭庁「子ども・子育て支援金制度とは」（2025年5月14日） <a href="https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/2013c0c1-d5f0-4555-920d-80d9428893be/9d0ba714/20250514_policies_kodomokosodateshienkin_09.pdf">https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/2013c0c1-d5f0-4555-920d-80d9428893be/9d0ba714/20250514_policies_kodomokosodateshienkin_09.pdf</a></li>
+      <li>こども家庭庁 子ども・子育て支援金制度管理部会資料（2025年12月26日） <a href="https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/caced149-9e77-4b1f-9ade-99232146f572/c4c8f02c/20251226councils-shingikai-kodomo_kosodate-kanri-caced149-01.pdf">https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/caced149-9e77-4b1f-9ade-99232146f572/c4c8f02c/20251226councils-shingikai-kodomo_kosodate-kanri-caced149-01.pdf</a></li>
+      <li>こども家庭庁「被用者保険 年収別の支援金額の試算（令和8年度）」 <a href="https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/fb3dbb28-102a-4840-90a5-00ad2e0d117f/7891820b/20260206policies-kodomokosodateshienkinseido-05.pdf">https://www.cfa.go.jp/assets/contents/node/basic_page/field_ref_resources/fb3dbb28-102a-4840-90a5-00ad2e0d117f/7891820b/20260206policies-kodomokosodateshienkinseido-05.pdf</a></li>
+      <li>国税庁「令和8年4月 源泉所得税の改正のあらまし」 <a href="https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf">https://www.nta.go.jp/publication/pamph/gensen/2026kaisei.pdf</a></li>
+      <li>国税庁「No.1199 基礎控除」 <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm">https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1199.htm</a></li>
+      <li>国税庁「No.2260 所得税の税率」 <a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm">https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2260.htm</a></li>
+      <li>厚生労働省「平成21年度予算（年金特別会計児童手当勘定）」 <a href="https://www.mhlw.go.jp/wp/yosan/kaiji/nenkin16-06.html">https://www.mhlw.go.jp/wp/yosan/kaiji/nenkin16-06.html</a></li>
+      <li>財務省「令和8年度税制改正の大綱」（2025年12月26日閣議決定） <a href="https://www.mof.go.jp/tax_policy/tax_reform/outline/fy2026/20251226taikou.pdf">https://www.mof.go.jp/tax_policy/tax_reform/outline/fy2026/20251226taikou.pdf</a></li>
+    </ol>
+  </section>
+
+</main>
+
+<script id="calc">
+// 計算の本体（画面に依存しない純粋な関数）。記事の calc.py・計算シートと同じ式。
+function kosodateCalc(manYen, ages){
+  var y = manYen * 10000;
+  var kyuyo = y <= 1900000 ? 740000 : y <= 3600000 ? y*3/10 + 80000 : y <= 6600000 ? y*2/10 + 440000 : y <= 8500000 ? y/10 + 1100000 : 1950000;
+  var s = y - kyuyo;
+  var kiso = s <= 1320000 ? 950000 : s <= 3360000 ? 880000 : s <= 4890000 ? 680000 : s <= 6550000 ? 630000 : 580000;
+  var t = Math.max(0, s - kiso - y*15/100);
+  var p = t <= 1950000 ? 5 : t <= 3300000 ? 10 : t <= 6950000 ? 20 : t <= 9000000 ? 23 : t <= 18000000 ? 33 : 40;
+  function genzei(kojoShotoku, kojoJumin){ return kojoShotoku*p*1021/100000 + kojoJumin/10; }
+  var gen = genzei(380000, 330000), nen09 = genzei(380000, 330000), tok09 = genzei(630000, 450000);
+  var shien = y*23/20000;
+  var comparable = manYen < 700;
+  var kids = [], teate = 0, zei = 0, diff = 0;
+  for (var i = 0; i < ages.length; i++){
+    var a = ages[i], older = 0, sameBefore = 0;
+    for (var j = 0; j < ages.length; j++){
+      if (ages[j] > a) older++;
+      if (j <= i && ages[j] === a) sameBefore++;
+    }
+    var order = older + sameBefore;
+    var counted = a > 18;
+    var L = counted ? 0 : (order >= 3 ? 360000 : (a < 3 ? 180000 : 120000));
+    var M = (a >= 16 && a <= 18) ? gen : 0;
+    var N = counted ? 0 : (a < 3 ? 120000 : (a < 12 ? (order >= 3 ? 120000 : 60000) : 0));
+    var O = counted ? 0 : (a >= 16 ? tok09 : nen09);
+    teate += L; zei += M; diff += (L + M) - (N + O);
+    kids.push({age: a, order: order, countOnly: counted, teate: Math.round(L), zei: Math.round(M)});
+  }
+  return {
+    kids: kids,
+    teate: Math.round(teate),
+    zei: Math.round(zei),
+    shien: Math.round(shien),
+    total: Math.round(teate + zei - shien),
+    comparable: comparable,
+    diff2009: comparable ? Math.round(diff - shien) : null,
+    taxRate: p
+  };
+}
+if (typeof module !== "undefined") module.exports = { kosodateCalc: kosodateCalc };
+</script>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var MAX_KIDS = 5;
+  var state = { n: 2, ages: [17, 5, 10, 8, 3] };
+  var yen = function(v){ return Math.round(v).toLocaleString("ja-JP"); };
+  var signed = function(v){ return (v > 0 ? "+" : v < 0 ? "−" : "") + yen(Math.abs(v)) + "円"; };
+
+  // 人数ボタン
+  var countBox = $("count");
+  for (var k = 1; k <= MAX_KIDS; k++){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = k; b.dataset.n = k;
+    b.setAttribute("aria-label", k + "人");
+    b.addEventListener("click", function(e){ state.n = +e.currentTarget.dataset.n; drawAges(); update(); });
+    countBox.appendChild(b);
+  }
+
+  function drawAges(){
+    countBox.querySelectorAll("button").forEach(function(btn){
+      btn.setAttribute("aria-pressed", String(+btn.dataset.n === state.n));
+    });
+    var box = $("ages"); box.innerHTML = "";
+    for (var i = 0; i < state.n; i++){
+      var w = document.createElement("div"); w.className = "age";
+      var id = "age" + i;
+      w.innerHTML = '<label class="k" for="' + id + '">' + (i + 1) + '人目</label>' +
+        '<div class="num"><input id="' + id + '" type="number" inputmode="numeric" min="0" max="22" step="1" value="' + state.ages[i] + '"><span>歳</span></div>';
+      box.appendChild(w);
+      (function(idx){
+        w.querySelector("input").addEventListener("input", function(e){ state.ages[idx] = e.target.value; update(); });
+      })(i);
+    }
+  }
+
+  var inc = $("income"), incR = $("income_r");
+  inc.addEventListener("input", function(){ if (inc.value !== "") incR.value = inc.value; update(); });
+  incR.addEventListener("input", function(){ inc.value = incR.value; update(); });
+
+  function readAges(){
+    var out = [];
+    for (var i = 0; i < state.n; i++){
+      var v = String(state.ages[i]).trim();
+      if (v === "" || !/^\d+$/.test(v)) return null;
+      var a = +v; if (a < 0 || a > 22) return null;
+      out.push(a);
+    }
+    return out;
+  }
+
+  function bar(label, value, max, color, text){
+    var w = max > 0 ? Math.max(Math.abs(value) / max * 100, value === 0 ? 0 : 1.5) : 0;
+    return '<div class="bar"><div class="top"><span>' + label + '</span><b>' + text + '</b></div>' +
+      '<div class="track"><div class="fill" style="width:' + w.toFixed(1) + '%;background:' + color + '"></div></div></div>';
+  }
+
+  function update(){
+    var err = $("err");
+    var m = inc.value === "" ? NaN : +inc.value;
+    var ages = readAges();
+    var msg = "";
+    if (!(m >= 100 && m <= 3000)) msg = "額面年収を100〜3,000万円で入れてください";
+    else if (!ages) msg = "子どもの年齢を0〜22歳の整数で入れてください";
+    err.hidden = !msg; err.textContent = msg;
+    if (msg){
+      $("vTotal").textContent = "—"; $("vDiff").textContent = "—"; $("vDiff").className = "pill na";
+      $("vDiffNote").textContent = ""; $("bars").innerHTML = ""; $("say").textContent = "";
+      $("kidRows").innerHTML = ""; $("vShien").textContent = "—";
+      return;
+    }
+    var r = kosodateCalc(m, ages);
+    $("vTotal").textContent = yen(r.total);
+    var d = $("vDiff");
+    if (r.comparable){
+      d.textContent = signed(r.diff2009);
+      d.className = "pill " + (r.diff2009 >= 0 ? "plus" : "minus");
+      $("vDiffNote").textContent = r.diff2009 >= 0
+        ? "2009年の制度のままより、年にこれだけ多く残ります（支援金を引いたあと）。"
+        : "2009年の制度のままより、年にこれだけ少なく残ります（支援金を引いたあと）。";
+    } else {
+      d.textContent = "比べられません";
+      d.className = "pill na";
+      $("vDiffNote").textContent = "（2009年の所得制限が未確認）年収700万円以上は、当時の児童手当の所得制限の額を確かめきれていないため比べていません。";
+    }
+
+    var max = Math.max(r.teate, r.zei, r.shien, Math.abs(r.total));
+    $("bars").innerHTML =
+      bar("児童手当（もらう）", r.teate, max, "var(--bar-a)", yen(r.teate) + "円") +
+      bar("扶養控除で減る税金", r.zei, max, "var(--bar-b)", yen(r.zei) + "円") +
+      bar("子育て支援金（引かれる）", r.shien, max, "var(--bar-c)", "−" + yen(r.shien) + "円") +
+      bar("うちの手元に残る額", r.total, max, "var(--bar-d)", yen(r.total) + "円");
+    $("say").textContent = r.zei > 0
+      ? "減る税金は、16〜18歳の子がいる年だけ付きます。所得税の税率は " + r.taxRate + "% として計算しています。"
+      : "16〜18歳の子がいないので、扶養控除で減る税金は0円です（所得税の税率は " + r.taxRate + "% として計算）。";
+
+    $("kidRows").innerHTML = r.kids.map(function(c, i){
+      return "<tr><td>" + (i + 1) + "人目（" + c.age + "歳）</td><td>第" + c.order + "子</td><td>" +
+        (c.countOnly ? "数えるだけ" : yen(c.teate) + "円") + "</td><td>" +
+        (c.countOnly ? "—" : yen(c.zei) + "円") + "</td></tr>";
+    }).join("");
+    $("vShien").textContent = "−" + yen(r.shien) + "円";
+  }
+
+  drawAges();
+  update();
+})();
+</script>
+</body>
+</html>
